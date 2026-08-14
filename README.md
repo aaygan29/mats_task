@@ -85,33 +85,40 @@ python -m src.run_all --config configs/main.yaml
 
 Every stage checkpoints; re-running resumes. Use `--force` to recompute.
 
-## Results (Qwen3-4B, n=14 kept items, L*=27, alpha=0.5)
+## Results (Qwen3-4B, n=17 kept items, L*=31, alpha=0.5; three lenses, held-out fitting, bootstrap CIs)
 
-Headline: **J-Lens is a better *reader* of the hidden intermediate than logit lens, but
-not a better *causal lever*.** This is the read-vs-write split Neel's review predicts
-("J-Lens is very much about variable interpretability").
+Headline: **J-Lens is a better *reader* of the hidden intermediate than logit lens, but as a
+*causal lever* it is statistically indistinguishable from logit lens, and its apparent
+mediation is mostly token-injection.** Read-vs-write split, now with baselines + stats.
 
-- **C0 Detection (robust positive):** J-Lens MRR of the true hidden entity = **0.81** vs
-  logit-lens **0.47** at L*=27 (`fig1`). The advantage is concentrated at late layers; at
-  mid layers single-token logit lens is comparable or better (consistent with Neel's note
-  that the single-token J-Lens variant only mildly helps mid-stack).
-- **C1 Mediation (real, partial):** steering the J-Lens entity direction moves **0.107**
-  probability onto the counterfactual answer vs **0.0001** for a matched-norm random
-  direction; 93% of trials flip. So the read is causally live, but direct answer-steering
-  dominates entity-steering ~4.5x (**0.478** vs 0.107), i.e. the multi-hop mediation is weak.
-- **C2/C3 (null vs baseline):** J-Lens (**0.107**) is statistically tied with logit lens
-  (**0.114**), and the `(J-Lens - logit)` advantage is ~0 at every linsim (slope **+0.05**,
-  intercept ~0; `fig2`, `fig3`). J-Lens' causal power is neither a low-linsim artifact nor
-  an improvement over the cheap baseline.
-- **Qualitatively (read the raw records):** clean genuine flips exist (`cur03` China->Britain
-  moves yuan->pound, 0.76 mass, ~0 token-push), but some items are mostly token-push
-  (`cap07`, `cap09`), and effects are heterogeneous.
+- **C0 Detection (robust positive):** J-Lens MRR of the true hidden entity = **0.60** vs
+  logit-lens **0.46** at L*=31, and J-Lens >= logit across most mid-late layers (`fig1`).
+  The learned-linear **tuned lens** scores far lower (0.24) *but is undertrained* (fit on a
+  30-sentence held-out corpus with a next-token objective), so it does NOT cleanly settle
+  whether J-Lens' edge is unique to the Jacobian or shared by any downstream-aware map. A
+  properly-trained tuned lens is the outstanding baseline. As-is, the trustworthy claim is
+  **J-Lens > logit lens at detection**.
+- **C1 Mediation (real but weak, and mostly token-push):** steering the J-Lens entity
+  direction moves **0.036** probability onto the counterfactual answer (95% CI
+  [0.007, 0.077], excludes 0) vs **-0.001** random. BUT the same steering raises the swapped
+  *entity* token by **0.21** (`token_push` >> `toward_Ap`), and direct answer-steering
+  dominates entity-steering **~23x** (0.84 vs 0.036). So the "mediation" is largely the model
+  surfacing the injected entity token, not genuine multi-hop routing to the answer.
+- **C2 (null vs baseline, now tested):** J-Lens (**0.039**) vs logit lens (**0.039**) are
+  indistinguishable: paired permutation **p = 0.998**, 95% CI of the difference
+  [-0.024, +0.019] straddles 0 (`fig2`). No causal advantage over the cheap baseline.
+- **C3 (inconclusive):** the `(J-Lens - logit)` advantage vs linsim has slope **-0.11**, 95%
+  CI [-0.27, +0.006] includes 0 (`fig3`). Even with low-linsim `symbol` items added, there
+  is no significant linsim-dependence; the confound question is not resolved, just unrefuted.
+- **`fig5`** shows the causal effect exists only at the gentlest alpha (0.5) and vanishes as
+  larger alphas break coherence, so the headline uses alpha=0.5 by an a-priori rule.
 
-**Honest limitations of this run:** n=14 after the zero-shot filter; the animal-sound family
-(intended very-low-linsim anchor) was dropped because the 4B didn't answer those prompts in
-top-6, so the lowest linsim is ~0 (currencies), not negative. Single-token J-Lens only;
-same-position steering; small N. Earlier runs' pathologies (a suppression-gameable metric,
-over-large alpha) are documented in `results/_run1_qwen3-4B_INVALID_causal/` and the git log.
+**Honest limitations:** n=17 after the zero-shot filter (families kept: 7 capital, 7 currency,
+3 symbol; the animal-sound family was dropped because the 4B wouldn't answer that phrasing).
+The tuned-lens baseline is undertrained (above). Single-token J-Lens only; same-position
+steering (which cannot fully separate injection from mediation — the token-push result is
+that concern made visible). Sanity gate passed (random control ~0). Earlier-run pathologies
+(suppression-gameable metric, over-large alpha) are documented in `results/_run1_*` + git log.
 
 ## Reading the results
 

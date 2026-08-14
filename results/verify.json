@@ -4,233 +4,233 @@
     "answer": "Paris",
     "top": [
       "located",
+      "in",
       "__",
-      "______",
-      "___",
-      "..."
+      "...",
+      "______"
     ],
-    "answer_rank": 75,
+    "answer_rank": 6,
     "answer_is_top1": false
   },
   {
     "id": "cap02",
     "answer": "Tokyo",
     "top": [
-      "the",
+      "Tokyo",
+      "__",
       "located",
-      "a",
-      "in",
-      "..."
+      "...",
+      "a"
     ],
-    "answer_rank": 52,
-    "answer_is_top1": false
+    "answer_rank": 1,
+    "answer_is_top1": true
   },
   {
     "id": "cap03",
     "answer": "Rome",
     "top": [
-      "located",
-      "in",
-      "the",
+      "Rome",
+      "__",
       "...",
-      "__"
+      "______",
+      "?"
     ],
-    "answer_rank": 21,
-    "answer_is_top1": false
+    "answer_rank": 1,
+    "answer_is_top1": true
   },
   {
     "id": "cap04",
     "answer": "Madrid",
     "top": [
       "located",
+      "Se",
       "...",
-      "in",
-      "______",
-      "__"
+      "?",
+      "?"
     ],
-    "answer_rank": 75,
+    "answer_rank": 47,
     "answer_is_top1": false
   },
   {
     "id": "cap05",
     "answer": "Cairo",
     "top": [
-      "the",
-      "a",
-      "located",
-      "Egypt",
-      "known"
+      "__",
+      ":",
+      "",
+      "?",
+      "..."
     ],
-    "answer_rank": 15,
+    "answer_rank": 8,
     "answer_is_top1": false
   },
   {
     "id": "cap06",
     "answer": "Vienna",
     "top": [
+      "in",
+      "Vienna",
       "located",
-      "the",
-      "...",
-      "__",
-      "______"
+      "Sal",
+      "__"
     ],
-    "answer_rank": 44,
+    "answer_rank": 2,
     "answer_is_top1": false
   },
   {
     "id": "cap07",
     "answer": "Amsterdam",
     "top": [
-      "__",
-      "___",
-      "______",
+      "located",
       "...",
-      "located"
+      "______",
+      "__",
+      "in"
     ],
-    "answer_rank": 487,
+    "answer_rank": 6,
     "answer_is_top1": false
   },
   {
     "id": "cap08",
     "answer": "Ottawa",
     "top": [
-      "...",
       "located",
       "in",
-      "______",
-      "___"
+      "__",
+      "which",
+      "a"
     ],
-    "answer_rank": 70,
+    "answer_rank": 29,
     "answer_is_top1": false
   },
   {
     "id": "cap09",
     "answer": "Seoul",
     "top": [
-      "...",
-      "the",
-      "__",
-      "___",
-      "______"
-    ],
-    "answer_rank": 101,
-    "answer_is_top1": false
-  },
-  {
-    "id": "cap10",
-    "answer": "London",
-    "top": [
-      "London",
-      "...",
-      "the",
-      "______",
-      "located"
+      "Seoul",
+      "located",
+      "which",
+      "in",
+      "__"
     ],
     "answer_rank": 1,
     "answer_is_top1": true
   },
   {
+    "id": "cap10",
+    "answer": "London",
+    "top": [
+      "located",
+      "__",
+      "______",
+      "London",
+      "in"
+    ],
+    "answer_rank": 3,
+    "answer_is_top1": false
+  },
+  {
     "id": "cur01",
     "answer": "euro",
     "top": [
-      "same",
+      "euro",
       "______",
-      "___",
-      "most",
-      "__"
+      "__",
+      "?",
+      "French"
     ],
-    "answer_rank": 15,
-    "answer_is_top1": false
+    "answer_rank": 1,
+    "answer_is_top1": true
   },
   {
     "id": "cur02",
     "answer": "ruble",
     "top": [
-      "same",
-      "currency",
-      "___",
-      "______",
-      "only"
+      "rub",
+      "Russian",
+      "Rub",
+      "r",
+      "______"
     ],
-    "answer_rank": 15,
-    "answer_is_top1": false
+    "answer_rank": 1,
+    "answer_is_top1": true
   },
   {
     "id": "cur03",
     "answer": "yuan",
     "top": [
-      "same",
-      "______",
-      "___",
-      "____",
-      "currency"
+      "yuan",
+      "Ren",
+      "Chinese",
+      "ren",
+      "Yuan"
     ],
-    "answer_rank": 6,
-    "answer_is_top1": false
+    "answer_rank": 1,
+    "answer_is_top1": true
   },
   {
     "id": "cur04",
     "answer": "peso",
     "top": [
-      "same",
+      "Mexican",
+      "peso",
       "______",
-      "currency",
-      "____",
-      "most"
+      "US",
+      "?"
     ],
-    "answer_rank": 33,
+    "answer_rank": 2,
     "answer_is_top1": false
   },
   {
     "id": "cur05",
     "answer": "dollar",
     "top": [
-      "same",
-      "______",
-      "currency",
+      "US",
       "United",
-      "___"
+      "U",
+      "dollar",
+      "American"
     ],
-    "answer_rank": 65,
+    "answer_rank": 4,
     "answer_is_top1": false
   },
   {
     "id": "cur06",
     "answer": "euro",
     "top": [
-      "same",
+      "euro",
+      "Spanish",
+      "Euro",
       "______",
-      "currency",
-      "___",
-      "most"
+      "____"
     ],
-    "answer_rank": 25,
-    "answer_is_top1": false
+    "answer_rank": 1,
+    "answer_is_top1": true
   },
   {
     "id": "cur07",
     "answer": "pound",
     "top": [
-      "same",
+      "Egyptian",
+      "__",
       "______",
-      "most",
       "____",
-      "currency"
+      "?"
     ],
-    "answer_rank": 65,
+    "answer_rank": 23,
     "answer_is_top1": false
   },
   {
     "id": "cur08",
     "answer": "real",
     "top": [
-      "same",
+      "Brazilian",
       "______",
-      "currency",
-      "...",
-      "most"
+      "US",
+      "real",
+      "Real"
     ],
-    "answer_rank": 72,
+    "answer_rank": 4,
     "answer_is_top1": false
   },
   {
@@ -238,12 +238,12 @@
     "answer": "moo",
     "top": [
       "a",
-      "the",
-      "due",
       "called",
+      "described",
+      "the",
       "similar"
     ],
-    "answer_rank": 13667,
+    "answer_rank": 654,
     "answer_is_top1": false
   },
   {
@@ -252,24 +252,24 @@
     "top": [
       "a",
       "called",
-      "known",
-      "the",
-      "an"
+      "usually",
+      "often",
+      "known"
     ],
-    "answer_rank": 836,
+    "answer_rank": 621,
     "answer_is_top1": false
   },
   {
     "id": "snd03",
     "answer": "quack",
     "top": [
-      "called",
       "a",
-      "known",
-      "the",
-      "due"
+      "called",
+      "like",
+      "described",
+      "the"
     ],
-    "answer_rank": 1701,
+    "answer_rank": 686,
     "answer_is_top1": false
   },
   {
@@ -277,12 +277,12 @@
     "answer": "woof",
     "top": [
       "a",
-      "called",
       "the",
-      "known",
-      "often"
+      "an",
+      "called",
+      "most"
     ],
-    "answer_rank": 2471,
+    "answer_rank": 694,
     "answer_is_top1": false
   },
   {
@@ -292,10 +292,10 @@
       "called",
       "a",
       "known",
-      "the",
-      "an"
+      "...",
+      ":"
     ],
-    "answer_rank": 817,
+    "answer_rank": 520,
     "answer_is_top1": false
   },
   {
@@ -303,51 +303,51 @@
     "answer": "neigh",
     "top": [
       "a",
+      "like",
       "the",
-      "an",
-      "described",
-      "best"
+      "called",
+      "very"
     ],
-    "answer_rank": 15416,
+    "answer_rank": 3177,
     "answer_is_top1": false
   },
   {
     "id": "sym01",
     "answer": "Au",
     "top": [
-      "__",
-      "____",
-      "______",
+      "Au",
+      "what",
+      ":",
       "...",
-      "("
+      "A"
     ],
-    "answer_rank": 14,
-    "answer_is_top1": false
+    "answer_rank": 1,
+    "answer_is_top1": true
   },
   {
     "id": "sym02",
     "answer": "Cu",
     "top": [
-      "__",
-      "______",
-      "____",
-      "___",
-      "..."
+      "Cu",
+      "Au",
+      "...",
+      "what",
+      ":"
     ],
-    "answer_rank": 69,
-    "answer_is_top1": false
+    "answer_rank": 1,
+    "answer_is_top1": true
   },
   {
     "id": "sym03",
     "answer": "Na",
     "top": [
-      "______",
-      "__",
       "...",
-      "what",
-      "?"
+      "Na",
+      "?",
+      "?",
+      "what"
     ],
-    "answer_rank": 47,
+    "answer_rank": 2,
     "answer_is_top1": false
   },
   {
@@ -355,12 +355,12 @@
     "answer": "Hg",
     "top": [
       "__",
-      "______",
-      "...",
-      "___",
-      "____"
+      "Au",
+      "what",
+      "____",
+      "which"
     ],
-    "answer_rank": 97,
+    "answer_rank": 9,
     "answer_is_top1": false
   }
 ]

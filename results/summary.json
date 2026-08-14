@@ -1,47 +1,47 @@
 {
   "headline": {
-    "model": "Qwen/Qwen3-0.6B",
-    "Lstar": 27,
+    "model": "Qwen/Qwen3-4B",
+    "Lstar": 31,
     "chosen_alpha": 0.5,
-    "n_items_kept": 28,
-    "n_paired_jlens_logit": 3,
+    "n_items_kept": 17,
+    "n_paired_jlens_logit": 13,
     "metric": "toward_Ap = P(counterfactual answer) moved (coherent trials)",
     "sanity_gate": {
       "random_control_mean_near_zero": true,
       "has_coherent_concept_trials": true,
-      "random_control_mean": -0.00023587646088769868,
-      "n_coherent_concept": 32,
+      "random_control_mean": -0.0008967037348327078,
+      "n_coherent_concept": 45,
       "PASS": true
     },
     "C0_detection_MRR_at_Lstar": {
-      "jlens": 0.20275869166918298,
-      "logit": 0.3187208203749557,
-      "tuned": 0.2750551091221466
+      "jlens": 0.6015406162464986,
+      "logit": 0.45546218487394957,
+      "tuned": 0.24231019238759177
     },
-    "C1_jlens_concept_mean": 0.0008319535542254071,
+    "C1_jlens_concept_mean": 0.03564467465811275,
     "C1_jlens_concept_CI": [
-      -0.00019851397059913035,
-      0.0025102426872388394
+      0.006667180533783822,
+      0.07702434916235916
     ],
-    "C1_random_control_mean": -0.00023587646088769868,
+    "C1_random_control_mean": -0.0008967037348327078,
     "C2_means": {
-      "jlens": 0.0016280270987291843,
-      "logit": 0.001163521107696241,
-      "tuned": 0.003435087317891672
+      "jlens": 0.03858782381150326,
+      "logit": 0.03878883281570395,
+      "tuned": 0.08657423973466802
     },
     "C2_jlens_minus_logit_CI": [
-      -0.0007793524788126421,
-      0.0021696125644629733
+      -0.02408125205285402,
+      0.019127075746775867
     ],
-    "C2_jlens_minus_logit_paired_p": 0.7531246875312468,
-    "C2_jlens_minus_tuned_paired_p": 0.18718128187181282,
-    "C3_advantage_slope": 0.0166485527673246,
+    "C2_jlens_minus_logit_paired_p": 0.9984001599840016,
+    "C2_jlens_minus_tuned_paired_p": 0.35836416358364165,
+    "C3_advantage_slope": -0.1136844868787982,
     "C3_slope_CI": [
-      0.007092132558692841,
-      0.04580914622419901
+      -0.27470222499981506,
+      0.005640888464941517
     ],
-    "dominance_answer_swap_jlens": 0.01366564812596836,
-    "token_push_jlens_concept": 0.3250159927731631
+    "dominance_answer_swap_jlens": 0.8376664086373768,
+    "token_push_jlens_concept": 0.21185492790013455
   },
   "chosen_alpha": 0.5
 }
