@@ -2,11 +2,12 @@
 # This is the configuration whose figures go in the write-up.
 model_name: Qwen/Qwen3-4B
 prompts_path: null
-keep_rank: 5               # keep only items the model answers within top-5 zero-shot
+keep_rank: 6               # keep items the model answers within top-6 zero-shot
 layers: null               # auto: evenly spaced across depth
 n_layers_probe: 10
 bake_positions: last       # single-token Jacobian; "all" = average over positions (slower)
 bake_max_prompts: 14
 methods: [jlens, logit, probe]
-alphas: [2.0, 4.0, 8.0, 12.0]
+# small alphas + coherence guard: large alphas just overwrite the residual and break the model
+alphas: [0.5, 1.0, 2.0, 4.0]
 seed: 0

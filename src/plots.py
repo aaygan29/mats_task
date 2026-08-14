@@ -21,12 +21,22 @@ def fig1_detection(summary_det, layers, Lstar, path, title_tag=""):
     plt.close(fig)
 
 
+EFFECT = "toward_Ap"   # probability mass moved onto the counterfactual answer
+
+
+def _coh(records):
+    return [r for r in records if r.get("coherent", True)]
+
+
 def _concept_best_alpha(records):
-    alphas = sorted({r["alpha"] for r in records})
+    """Largest mean toward_Ap for J-Lens concept-swap among COHERENT trials."""
+    rc = _coh(records)
+    alphas = sorted({r["alpha"] for r in rc}) or sorted({r["alpha"] for r in records})
     best, best_score = alphas[0], -1e9
     for a in alphas:
-        sc = np.mean([r["effect"] for r in records
-                      if r["alpha"] == a and r["mode"] == "concept" and r["method"] == "jlens"])
+        vals = [r[EFFECT] for r in rc
+                if r["alpha"] == a and r["mode"] == "concept" and r["method"] == "jlens"]
+        sc = np.mean(vals) if vals else -1e9
         if sc > best_score:
             best_score, best = sc, a
     return best
@@ -34,9 +44,10 @@ def _concept_best_alpha(records):
 
 def fig2_causal_vs_linsim(records, path, title_tag=""):
     a = _concept_best_alpha(records)
+    rc = _coh(records)
     fig, ax = plt.subplots(figsize=(6.2, 4.2))
     for m in ("jlens", "logit"):
-        pts = [(r["linsim"], r["effect"]) for r in records
+        pts = [(r["linsim"], r[EFFECT]) for r in rc
                if r["method"] == m and r["mode"] == "concept" and r["alpha"] == a]
         if not pts:
             continue
@@ -48,8 +59,8 @@ def fig2_causal_vs_linsim(records, path, title_tag=""):
             ax.plot(xx, b * xx + c, color=C[m], lw=1.6, alpha=0.9)
     ax.axhline(0, color="k", lw=0.8, alpha=0.5)
     ax.set_xlabel("linsim = cos(U[answer], U[entity])  (low = answer NOT readable from entity)")
-    ax.set_ylabel("causal flip effect  (answer -> counterfactual)")
-    ax.set_title(f"C2/C3: does J-Lens flip the answer, esp. at low linsim?{title_tag}\n(alpha={a})")
+    ax.set_ylabel("P(counterfactual answer) moved  [coherent trials]")
+    ax.set_title(f"C2/C3: does J-Lens move mass onto A', esp. at low linsim?{title_tag}\n(alpha={a})")
     ax.legend(); ax.grid(alpha=0.3); fig.tight_layout(); fig.savefig(path, dpi=140)
     plt.close(fig)
 
@@ -57,10 +68,10 @@ def fig2_causal_vs_linsim(records, path, title_tag=""):
 def fig3_confound(records, path, title_tag=""):
     a = _concept_best_alpha(records)
     by_id = {}
-    for r in records:
+    for r in _coh(records):
         if r["mode"] != "concept" or r["alpha"] != a:
             continue
-        by_id.setdefault(r["id"], {})[r["method"]] = (r["linsim"], r["effect"])
+        by_id.setdefault(r["id"], {})[r["method"]] = (r["linsim"], r[EFFECT])
     xs, ys = [], []
     for d in by_id.values():
         if "jlens" in d and "logit" in d:
@@ -85,17 +96,18 @@ def fig4_controls(records, path, title_tag=""):
     """Concept-swap vs answer-swap (Neel's dominance control) vs random, for J-Lens."""
     a = _concept_best_alpha(records)
     cats = ["concept", "answer", "random"]
+    rc = _coh(records)
     vals, errs = [], []
     for mode in cats:
         m = "jlens" if mode != "random" else "random"
-        e = [r["effect"] for r in records
+        e = [r[EFFECT] for r in rc
              if r["alpha"] == a and r["mode"] == mode and r["method"] == m]
         vals.append(np.mean(e) if e else 0.0)
         errs.append(np.std(e) / max(len(e), 1) ** 0.5 if e else 0.0)
     fig, ax = plt.subplots(figsize=(5.4, 4.0))
     ax.bar(cats, vals, yerr=errs, color=["#1f77b4", "#ff7f0e", "#7f7f7f"], capsize=4)
     ax.axhline(0, color="k", lw=0.8)
-    ax.set_ylabel("mean causal flip effect")
+    ax.set_ylabel("mean P(A') moved  [coherent]")
     ax.set_title(f"Controls (J-Lens){title_tag}\nconcept-swap should beat answer-swap & random")
     ax.grid(alpha=0.3, axis="y"); fig.tight_layout(); fig.savefig(path, dpi=140)
     plt.close(fig)

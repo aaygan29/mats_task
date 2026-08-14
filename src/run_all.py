@@ -118,33 +118,43 @@ def main(config_path, out_dir=None, force=False):
 
 
 def build_summary(cfg, summ, Lstar, records, items, layers):
+    E = "toward_Ap"
     a = plots._concept_best_alpha(records)
+    rc = [r for r in records if r.get("coherent", True)]
     def mean(m, mode, sel=lambda r: True):
-        e = [r["effect"] for r in records if r["method"] == m and r["mode"] == mode
+        e = [r[E] for r in rc if r["method"] == m and r["mode"] == mode
              and r["alpha"] == a and sel(r)]
         return float(np.mean(e)) if e else None
-    lin = sorted(r["linsim"] for r in records if r["mode"] == "concept" and r["method"] == "jlens")
+    def flip_rate(m, mode):
+        e = [r["flip"] for r in rc if r["method"] == m and r["mode"] == mode and r["alpha"] == a]
+        return float(np.mean(e)) if e else None
+    lin = sorted(r["linsim"] for r in rc if r["mode"] == "concept" and r["method"] == "jlens")
     med = lin[len(lin)//2] if lin else 0.0
-    # C3 slope: (jlens-logit) effect vs linsim
     by_id = {}
-    for r in records:
+    for r in rc:
         if r["mode"] == "concept" and r["alpha"] == a:
-            by_id.setdefault(r["id"], {})[r["method"]] = (r["linsim"], r["effect"])
+            by_id.setdefault(r["id"], {})[r["method"]] = (r["linsim"], r[E])
     xs = [d["jlens"][0] for d in by_id.values() if "jlens" in d and "logit" in d]
     ys = [d["jlens"][1] - d["logit"][1] for d in by_id.values() if "jlens" in d and "logit" in d]
     slope = float(np.polyfit(xs, ys, 1)[0]) if len(xs) >= 2 else None
+    n_coherent = sum(1 for r in rc if r["alpha"] == a and r["mode"] == "concept")
     headline = {
         "model": cfg["model_name"], "Lstar": Lstar, "best_alpha": a,
-        "n_items": len(items),
+        "n_items": len(items), "metric": "toward_Ap = P(counterfactual answer) moved (coherent trials)",
         "C0_detection_MRR_at_Lstar": {"jlens": summ["jlens"][Lstar], "logit": summ["logit"][Lstar]},
-        "C1_jlens_concept_effect_mean": mean("jlens", "concept"),
+        "C1_jlens_concept_toward_mean": mean("jlens", "concept"),
         "C1_random_control_mean": mean("random", "random"),
-        "C2_jlens_vs_logit_concept": {"jlens": mean("jlens", "concept"), "logit": mean("logit", "concept")},
-        "C3_lowlinsim": {
+        "C1_jlens_concept_flip_rate": flip_rate("jlens", "concept"),
+        "C2_jlens_vs_logit_toward": {"jlens": mean("jlens", "concept"), "logit": mean("logit", "concept")},
+        "C3_lowlinsim_toward": {
             "jlens": mean("jlens", "concept", lambda r: r["linsim"] <= med),
             "logit": mean("logit", "concept", lambda r: r["linsim"] <= med)},
         "C3_advantage_slope_vs_linsim": slope,
-        "dominance_control_answer_swap_jlens": mean("jlens", "answer"),
+        "dominance_control_answer_swap_jlens_toward": mean("jlens", "answer"),
+        "token_push_control_jlens_concept_push_mean": mean and float(np.mean(
+            [r["push_Ip"] for r in rc if r["method"] == "jlens" and r["mode"] == "concept"
+             and r["alpha"] == a])) if any(r["method"]=="jlens" and r["mode"]=="concept" and r["alpha"]==a for r in rc) else None,
+        "n_coherent_concept_trials_at_best_alpha": n_coherent,
     }
     return {"headline": headline, "best_alpha": a, "linsim_median": med}
 

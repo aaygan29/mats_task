@@ -75,9 +75,14 @@ def add_hook(model, module_idx, pos, vec):
 
 
 @torch.no_grad()
-def logprobs_at_last(model, enc, ids):
+def scored_last(model, enc, ids):
+    """Return log-probs for tracked ids PLUS coherence stats of the full next-token dist."""
     lp = torch.log_softmax(model(**enc).logits[0, -1].float(), dim=-1)
-    return {k: float(lp[v]) for k, v in ids.items()}
+    p = lp.exp()
+    ent = float(-(p * lp).sum())               # nats; low => collapsed, ~natural => coherent
+    top = int(lp.argmax())
+    return {k: float(lp[v]) for k, v in ids.items()}, {
+        "entropy": ent, "top_id": top, "max_p": float(p.max())}
 
 
 def method_vec(method, cid, id2idx, J_Lidx, U, P):
@@ -113,8 +118,8 @@ def run_steering(model, tok, items, id2idx, J, layers, Lstar, device,
         I = first_token_id(tok, it["entity"]); Ip = first_token_id(tok, it["cf_entity"])
         A = first_token_id(tok, it["answer"]); Ap = first_token_id(tok, it["cf_answer"])
         ids = {"A": A, "Ap": Ap, "I": I, "Ip": Ip}
-        base = logprobs_at_last(model, enc, ids)
-        base_gap = base["Ap"] - base["A"]
+        base, base_coh = scored_last(model, enc, ids)
+        import math as _m
         linsim = float(torch.cosine_similarity(U[A].float(), U[I].float(), dim=0))
         resid_norm = float(model(**enc, output_hidden_states=True)
                            .hidden_states[Lstar][0, pos].float().norm())
@@ -136,18 +141,26 @@ def run_steering(model, tok, items, id2idx, J, layers, Lstar, device,
             for m, mode, unit in trials:
                 h = add_hook(model, module_idx, pos, scale * unit)
                 try:
-                    st = logprobs_at_last(model, enc, ids)
+                    st, coh = scored_last(model, enc, ids)
                 finally:
                     h.remove()
-                effect = (st["Ap"] - st["A"]) - base_gap
+                # PRIMARY metric: probability mass moved ONTO the counterfactual answer A'.
+                # This cannot be faked by merely suppressing A (which the log-gap metric could).
+                toward = _m.exp(st["Ap"]) - _m.exp(base["Ap"])
+                # token-push control, same units: did we instead just raise the swapped entity I'?
+                push = _m.exp(st["Ip"]) - _m.exp(base["Ip"])
+                # coherence: is the steered next-token dist still model-like (not collapsed/broken)?
+                coherent = coh["entropy"] >= 0.3 * base_coh["entropy"] and coh["max_p"] <= 0.999
                 records.append({
                     "id": it["id"], "family": it["family"], "linsim": linsim,
-                    "method": m, "mode": mode, "alpha": alpha, "effect": effect,
-                    "steered_gap": st["Ap"] - st["A"], "base_gap": base_gap,
-                    "delta_Ap": st["Ap"] - base["Ap"], "delta_A": st["A"] - base["A"],
-                    # mediation control: did we move the answer A' MORE than the raw
-                    # entity token I'? If delta_Ap >> delta_Ip, it's real multi-hop.
-                    "delta_Ip": st["Ip"] - base["Ip"],
+                    "method": m, "mode": mode, "alpha": alpha,
+                    "toward_Ap": toward,          # <-- headline effect (prob space)
+                    "push_Ip": push,              # token-push control
+                    "flip": bool(st["Ap"] > st["A"]),
+                    "p_Ap_base": _m.exp(base["Ap"]), "p_Ap_steer": _m.exp(st["Ap"]),
+                    "p_A_base": _m.exp(base["A"]), "p_A_steer": _m.exp(st["A"]),
+                    "coherent": bool(coherent), "entropy_steer": coh["entropy"],
+                    "entropy_base": base_coh["entropy"],
                 })
         print(f"[steer] {it['id']} done", flush=True)
     return records
