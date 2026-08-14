@@ -1,17 +1,13 @@
-"""Detection (C0) and causal steering (C1/C2/C3).
-
-Detection: on the last prompt token, how well does each lens rank the TRUE hidden
-entity among the candidate set, across layers? -> picks the working layer L*.
-
-Steering: at L*, inject (concept_to - concept_from) using each method's direction and
-measure how much the FINAL answer flips (A -> A'). The headline covariate is linsim =
-cos(U[answer], U[entity]): J-Lens is only interesting if it flips the answer even when
-linsim is low (answer not linearly readable from entity).
+"""Detection (C0) and causal steering (C1/C2/C3), across three lenses:
+J-Lens (single-token Jacobian), logit lens (network-blind), tuned lens (learned-linear,
+network-aware). Tuned lens is the baseline that makes C0 a fair test.
 """
 import math
 import torch
 from src.common import first_token_id, unembedding
-from src.lenses import jlens_scores, logitlens_scores
+from src.lenses import jlens_scores, logitlens_scores, tuned_scores
+
+METHODS = ("jlens", "logit", "tuned")
 
 
 @torch.no_grad()
@@ -26,42 +22,31 @@ def _rank_of(scores, target_idx):
 
 
 @torch.no_grad()
-def run_detection(model, tok, items, cand_ids, id2idx, layers, device):
-    """Per layer, per lens: mean reciprocal rank (MRR) of the true entity."""
+def run_detection(model, tok, items, cand_ids, id2idx, layers, device, J, tuned):
+    """Per item/layer/lens: rank of the true entity among candidates.
+    J: [len(layers), n_cand, d]; tuned: {layer: (W,b)}."""
+    lidx = {l: i for i, l in enumerate(layers)}
     per_prompt = []
     for it in items:
         enc = tok(it["prompt"], return_tensors="pt").to(device)
         resid = last_resid(model, enc, layers)
         ent_idx = id2idx[first_token_id(tok, it["entity"])]
-        # bake jvecs must be provided via closure; here we only do logit-lens which
-        # needs no bake. J-Lens detection is filled in run_all (needs J tensor).
         rec = {"id": it["id"], "family": it["family"], "entity": it["entity"]}
         for l in layers:
-            s = logitlens_scores(resid[l], model, cand_ids)
-            rec[f"logit_L{l}"] = _rank_of(s, ent_idx)
+            rec[f"jlens_L{l}"] = _rank_of(jlens_scores(resid[l], J[lidx[l]]), ent_idx)
+            rec[f"logit_L{l}"] = _rank_of(logitlens_scores(resid[l], model, cand_ids), ent_idx)
+            W, b = tuned[l]
+            rec[f"tuned_L{l}"] = _rank_of(tuned_scores(resid[l], W, b), ent_idx)
         per_prompt.append((it, resid, ent_idx, rec))
     return per_prompt
 
 
-def detection_add_jlens(per_prompt, J, layers, cand_ids):
-    """Fill in J-Lens ranks using baked J [len(layers), n_cand, d]."""
-    lidx = {l: i for i, l in enumerate(layers)}
-    for it, resid, ent_idx, rec in per_prompt:
-        for l in layers:
-            s = jlens_scores(resid[l], J[lidx[l]])
-            rec[f"jlens_L{l}"] = _rank_of(s, ent_idx)
-    return per_prompt
-
-
 def summarize_detection(per_prompt, layers):
-    """MRR per (method, layer). Returns dict method -> {layer: mrr}."""
-    out = {"jlens": {}, "logit": {}}
+    out = {m: {} for m in METHODS}
     n = len(per_prompt)
     for l in layers:
-        for m in ("jlens", "logit"):
-            key = f"{m}_L{l}"
-            mrr = sum(1.0 / rec[key] for _, _, _, rec in per_prompt) / n
-            out[m][l] = mrr
+        for m in METHODS:
+            out[m][l] = sum(1.0 / rec[f"{m}_L{l}"] for _, _, _, rec in per_prompt) / n
     return out
 
 
@@ -76,91 +61,87 @@ def add_hook(model, module_idx, pos, vec):
 
 @torch.no_grad()
 def scored_last(model, enc, ids):
-    """Return log-probs for tracked ids PLUS coherence stats of the full next-token dist."""
     lp = torch.log_softmax(model(**enc).logits[0, -1].float(), dim=-1)
     p = lp.exp()
-    ent = float(-(p * lp).sum())               # nats; low => collapsed, ~natural => coherent
-    top = int(lp.argmax())
+    ent = float(-(p * lp).sum())
     return {k: float(lp[v]) for k, v in ids.items()}, {
-        "entropy": ent, "top_id": top, "max_p": float(p.max())}
+        "entropy": ent, "top_id": int(lp.argmax()), "max_p": float(p.max())}
 
 
-def method_vec(method, cid, id2idx, J_Lidx, U, P):
+def method_vec(method, cid, id2idx, J_Lstar, U, W_tuned):
     if method == "jlens":
-        return J_Lidx[id2idx[cid]]
+        return J_Lstar[id2idx[cid]]
     if method == "logit":
         return U[cid].float()
-    if method == "probe":
-        return P[id2idx[cid]]
+    if method == "tuned":
+        return W_tuned[id2idx[cid]]
     raise ValueError(method)
 
 
 @torch.no_grad()
-def run_steering(model, tok, items, id2idx, J, layers, Lstar, device,
-                 methods=("jlens", "logit"), alphas=(2.0, 4.0, 8.0),
-                 P=None, seed=0):
-    """For each prompt/method/mode/alpha: causal flip effect on the answer.
-
-    mode: 'concept' (entity->cf_entity, the real test), 'answer' (answer->cf_answer,
-    Neel's fig-15 dominance control), 'random' (matched-norm random vector).
-    Effect = [lp(A') - lp(A)]_steered - [lp(A') - lp(A)]_baseline.
-    Also records whether steering merely pushed the cf_entity token (mediation control).
-    """
+def run_steering(model, tok, items, id2idx, J, layers, Lstar, device, W_tuned,
+                 methods=("jlens", "logit", "tuned"), alphas=(0.5, 1.0, 2.0, 4.0),
+                 rand_seeds=(0, 1, 2, 3, 4)):
+    """Causal flip effect (toward_Ap = prob mass moved onto A'), with controls.
+    random control is averaged over several seeds for a variance estimate.
+    Guards against degenerate (zero-norm) steering directions -> NaN."""
     U = unembedding(model)
     lidx = {l: i for i, l in enumerate(layers)}
     J_Lstar = J[lidx[Lstar]]
-    module_idx = Lstar - 1  # hidden_states[L] == output of decoder layer L-1
-    g = torch.Generator(device="cpu").manual_seed(seed)
+    module_idx = Lstar - 1
     records = []
     for it in items:
         enc = tok(it["prompt"], return_tensors="pt").to(device)
         pos = enc.input_ids.shape[1] - 1
         I = first_token_id(tok, it["entity"]); Ip = first_token_id(tok, it["cf_entity"])
         A = first_token_id(tok, it["answer"]); Ap = first_token_id(tok, it["cf_answer"])
+        # skip items whose concept/answer collide on the first token (would NaN or be meaningless)
+        if I == Ip or A == Ap:
+            print(f"[steer] SKIP {it['id']} (first-token collision I/Ip or A/Ap)", flush=True)
+            continue
         ids = {"A": A, "Ap": Ap, "I": I, "Ip": Ip}
         base, base_coh = scored_last(model, enc, ids)
-        import math as _m
         linsim = float(torch.cosine_similarity(U[A].float(), U[I].float(), dim=0))
         resid_norm = float(model(**enc, output_hidden_states=True)
                            .hidden_states[Lstar][0, pos].float().norm())
-        rand_unit = torch.nn.functional.normalize(
-            torch.randn(model.config.hidden_size, generator=g), dim=0).to(device)
 
         def direction(method, frm, to):
-            v = method_vec(method, to, id2idx, J_Lstar, U, P) \
-                - method_vec(method, frm, id2idx, J_Lstar, U, P)
-            return torch.nn.functional.normalize(v, dim=0)
+            v = method_vec(method, to, id2idx, J_Lstar, U, W_tuned) \
+                - method_vec(method, frm, id2idx, J_Lstar, U, W_tuned)
+            n = v.norm()
+            return None if float(n) < 1e-8 else v / n
+
+        def measure(unit, scale):
+            h = add_hook(model, module_idx, pos, scale * unit)
+            try:
+                st, coh = scored_last(model, enc, ids)
+            finally:
+                h.remove()
+            coherent = coh["entropy"] >= 0.3 * base_coh["entropy"] and coh["max_p"] <= 0.999
+            return {
+                "toward_Ap": math.exp(st["Ap"]) - math.exp(base["Ap"]),
+                "push_Ip": math.exp(st["Ip"]) - math.exp(base["Ip"]),
+                "flip": bool(st["Ap"] > st["A"]),
+                "p_Ap_base": math.exp(base["Ap"]), "p_Ap_steer": math.exp(st["Ap"]),
+                "p_A_base": math.exp(base["A"]), "p_A_steer": math.exp(st["A"]),
+                "coherent": bool(coherent), "entropy_steer": coh["entropy"],
+                "entropy_base": base_coh["entropy"]}
 
         for alpha in alphas:
             scale = alpha * resid_norm
-            trials = []
+            common = {"id": it["id"], "family": it["family"], "linsim": linsim, "alpha": alpha}
             for m in methods:
-                trials.append((m, "concept", direction(m, I, Ip)))
-                trials.append((m, "answer", direction(m, A, Ap)))
-            trials.append(("random", "random", rand_unit))
-            for m, mode, unit in trials:
-                h = add_hook(model, module_idx, pos, scale * unit)
-                try:
-                    st, coh = scored_last(model, enc, ids)
-                finally:
-                    h.remove()
-                # PRIMARY metric: probability mass moved ONTO the counterfactual answer A'.
-                # This cannot be faked by merely suppressing A (which the log-gap metric could).
-                toward = _m.exp(st["Ap"]) - _m.exp(base["Ap"])
-                # token-push control, same units: did we instead just raise the swapped entity I'?
-                push = _m.exp(st["Ip"]) - _m.exp(base["Ip"])
-                # coherence: is the steered next-token dist still model-like (not collapsed/broken)?
-                coherent = coh["entropy"] >= 0.3 * base_coh["entropy"] and coh["max_p"] <= 0.999
-                records.append({
-                    "id": it["id"], "family": it["family"], "linsim": linsim,
-                    "method": m, "mode": mode, "alpha": alpha,
-                    "toward_Ap": toward,          # <-- headline effect (prob space)
-                    "push_Ip": push,              # token-push control
-                    "flip": bool(st["Ap"] > st["A"]),
-                    "p_Ap_base": _m.exp(base["Ap"]), "p_Ap_steer": _m.exp(st["Ap"]),
-                    "p_A_base": _m.exp(base["A"]), "p_A_steer": _m.exp(st["A"]),
-                    "coherent": bool(coherent), "entropy_steer": coh["entropy"],
-                    "entropy_base": base_coh["entropy"],
-                })
+                for mode, frm, to in (("concept", I, Ip), ("answer", A, Ap)):
+                    u = direction(m, frm, to)
+                    if u is None:
+                        continue
+                    records.append({**common, "method": m, "mode": mode, **measure(u, scale)})
+            # random control, averaged over seeds (matched norm)
+            for s in rand_seeds:
+                g = torch.Generator(device="cpu").manual_seed(1000 * s + int(alpha * 10))
+                u = torch.nn.functional.normalize(
+                    torch.randn(model.config.hidden_size, generator=g), dim=0).to(device)
+                records.append({**common, "method": "random", "mode": "random",
+                                "seed": s, **measure(u, scale)})
         print(f"[steer] {it['id']} done", flush=True)
     return records

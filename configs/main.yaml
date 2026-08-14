@@ -1,13 +1,11 @@
-# REAL scientific run. Needs a GPU with >=16GB (run on Modal A10G 24GB via modal_run.py).
-# This is the configuration whose figures go in the write-up.
+# REAL scientific run. Needs a GPU with >=16GB (Modal A10G via modal_run.py).
 model_name: Qwen/Qwen3-4B
 prompts_path: null
-keep_rank: 6               # keep items the model answers within top-6 zero-shot
+keep_rank: 6               # keep items answered within top-6 zero-shot
 layers: null               # auto: evenly spaced across depth
 n_layers_probe: 10
-bake_positions: last       # single-token Jacobian; "all" = average over positions (slower)
-bake_max_prompts: 14
-methods: [jlens, logit, probe]
-# small alphas + coherence guard: large alphas just overwrite the residual and break the model
-alphas: [0.5, 1.0, 2.0, 4.0]
-seed: 0
+bake_positions: last       # single-token Jacobian at last token of each held-out sentence
+bake_max_prompts: 30       # number of held-out corpus sentences used to bake J + fit tuned lens
+methods: [jlens, logit, tuned]   # tuned = learned-linear network-aware baseline
+alphas: [0.5, 1.0, 2.0, 4.0]     # full curve reported; headline uses the gentlest (0.5)
+tuned_ridge: 100.0
