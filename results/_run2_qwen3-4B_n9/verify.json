@@ -1,0 +1,184 @@
+[
+  {
+    "id": "cap01",
+    "answer": "Paris",
+    "top": [
+      "located",
+      "in",
+      "__",
+      "...",
+      "______"
+    ],
+    "answer_rank": 6,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap02",
+    "answer": "Tokyo",
+    "top": [
+      "Tokyo",
+      "__",
+      "located",
+      "...",
+      "a"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cap03",
+    "answer": "Rome",
+    "top": [
+      "Rome",
+      "__",
+      "...",
+      "______",
+      "?"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cap04",
+    "answer": "Madrid",
+    "top": [
+      "located",
+      "Se",
+      "...",
+      "?",
+      "?"
+    ],
+    "answer_rank": 47,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap05",
+    "answer": "Cairo",
+    "top": [
+      "__",
+      "located",
+      "...",
+      "?",
+      ":"
+    ],
+    "answer_rank": 11,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur01",
+    "answer": "euro",
+    "top": [
+      "euro",
+      "______",
+      "__",
+      "?",
+      "French"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cur02",
+    "answer": "ruble",
+    "top": [
+      "rub",
+      "Russian",
+      "Rub",
+      "r",
+      "______"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cur03",
+    "answer": "yuan",
+    "top": [
+      "Ren",
+      "yuan",
+      "Chinese",
+      "R",
+      "ren"
+    ],
+    "answer_rank": 2,
+    "answer_is_top1": false
+  },
+  {
+    "id": "con01",
+    "answer": "Europe",
+    "top": [
+      "the",
+      "______",
+      "?",
+      "__",
+      "?"
+    ],
+    "answer_rank": 13,
+    "answer_is_top1": false
+  },
+  {
+    "id": "con02",
+    "answer": "Africa",
+    "top": [
+      "__",
+      ":",
+      "____",
+      "___",
+      ":"
+    ],
+    "answer_rank": 53,
+    "answer_is_top1": false
+  },
+  {
+    "id": "num01",
+    "answer": "eight",
+    "top": [
+      "",
+      "a",
+      "...",
+      "eight",
+      "?"
+    ],
+    "answer_rank": 4,
+    "answer_is_top1": false
+  },
+  {
+    "id": "num02",
+    "answer": "four",
+    "top": [
+      "the",
+      "",
+      "at",
+      "in",
+      "..."
+    ],
+    "answer_rank": 118,
+    "answer_is_top1": false
+  },
+  {
+    "id": "num03",
+    "answer": "79",
+    "top": [
+      "",
+      "the",
+      "...",
+      "what",
+      "?"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "num04",
+    "answer": "eight",
+    "top": [
+      "",
+      "a",
+      "...",
+      "eight",
+      "..."
+    ],
+    "answer_rank": 4,
+    "answer_is_top1": false
+  }
+]

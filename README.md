@@ -85,6 +85,34 @@ python -m src.run_all --config configs/main.yaml
 
 Every stage checkpoints; re-running resumes. Use `--force` to recompute.
 
+## Results (Qwen3-4B, n=14 kept items, L*=27, alpha=0.5)
+
+Headline: **J-Lens is a better *reader* of the hidden intermediate than logit lens, but
+not a better *causal lever*.** This is the read-vs-write split Neel's review predicts
+("J-Lens is very much about variable interpretability").
+
+- **C0 Detection (robust positive):** J-Lens MRR of the true hidden entity = **0.81** vs
+  logit-lens **0.47** at L*=27 (`fig1`). The advantage is concentrated at late layers; at
+  mid layers single-token logit lens is comparable or better (consistent with Neel's note
+  that the single-token J-Lens variant only mildly helps mid-stack).
+- **C1 Mediation (real, partial):** steering the J-Lens entity direction moves **0.107**
+  probability onto the counterfactual answer vs **0.0001** for a matched-norm random
+  direction; 93% of trials flip. So the read is causally live, but direct answer-steering
+  dominates entity-steering ~4.5x (**0.478** vs 0.107), i.e. the multi-hop mediation is weak.
+- **C2/C3 (null vs baseline):** J-Lens (**0.107**) is statistically tied with logit lens
+  (**0.114**), and the `(J-Lens - logit)` advantage is ~0 at every linsim (slope **+0.05**,
+  intercept ~0; `fig2`, `fig3`). J-Lens' causal power is neither a low-linsim artifact nor
+  an improvement over the cheap baseline.
+- **Qualitatively (read the raw records):** clean genuine flips exist (`cur03` China->Britain
+  moves yuan->pound, 0.76 mass, ~0 token-push), but some items are mostly token-push
+  (`cap07`, `cap09`), and effects are heterogeneous.
+
+**Honest limitations of this run:** n=14 after the zero-shot filter; the animal-sound family
+(intended very-low-linsim anchor) was dropped because the 4B didn't answer those prompts in
+top-6, so the lowest linsim is ~0 (currencies), not negative. Single-token J-Lens only;
+same-position steering; small N. Earlier runs' pathologies (a suppression-gameable metric,
+over-large alpha) are documented in `results/_run1_qwen3-4B_INVALID_causal/` and the git log.
+
 ## Reading the results
 
 `results/summary.json -> headline` reports, at the chosen layer `L*` and best steering

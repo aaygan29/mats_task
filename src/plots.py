@@ -82,12 +82,12 @@ def fig3_confound(records, path, title_tag=""):
         b, c = np.polyfit(xs, ys, 1)
         xx = np.linspace(min(xs), max(xs), 50)
         ax.plot(xx, b * xx + c, color="#6a3d9a", lw=1.8,
-                label=f"slope={b:+.2f} (want >=0)")
+                label=f"slope={b:+.2f}, intercept={c:+.2f}")
     ax.axhline(0, color="k", lw=0.8, alpha=0.6)
     ax.set_xlabel("linsim = cos(U[answer], U[entity])")
     ax.set_ylabel("J-Lens effect  -  logit-lens effect")
-    ax.set_title(f"C3 the decisive test: J-Lens advantage vs linearity{title_tag}\n"
-                 "advantage persisting at low linsim => real mediation, not artifact")
+    ax.set_title(f"C3: J-Lens minus logit-lens causal effect vs linearity{title_tag}\n"
+                 "points near 0 at all linsim => J-Lens no better than logit lens as a lever")
     ax.legend(); ax.grid(alpha=0.3); fig.tight_layout(); fig.savefig(path, dpi=140)
     plt.close(fig)
 
