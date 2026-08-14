@@ -1,0 +1,184 @@
+[
+  {
+    "id": "cap01",
+    "answer": "Paris",
+    "top": [
+      "located",
+      "__",
+      "______",
+      "___",
+      "..."
+    ],
+    "answer_rank": 75,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap02",
+    "answer": "Tokyo",
+    "top": [
+      "the",
+      "located",
+      "a",
+      "in",
+      "..."
+    ],
+    "answer_rank": 52,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap03",
+    "answer": "Rome",
+    "top": [
+      "located",
+      "in",
+      "the",
+      "...",
+      "__"
+    ],
+    "answer_rank": 21,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap04",
+    "answer": "Madrid",
+    "top": [
+      "located",
+      "...",
+      "in",
+      "______",
+      "__"
+    ],
+    "answer_rank": 75,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap05",
+    "answer": "Cairo",
+    "top": [
+      "Egypt",
+      "the",
+      "a",
+      "located",
+      "..."
+    ],
+    "answer_rank": 8,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur01",
+    "answer": "euro",
+    "top": [
+      "same",
+      "______",
+      "___",
+      "most",
+      "__"
+    ],
+    "answer_rank": 15,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur02",
+    "answer": "ruble",
+    "top": [
+      "same",
+      "currency",
+      "___",
+      "______",
+      "only"
+    ],
+    "answer_rank": 15,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur03",
+    "answer": "yuan",
+    "top": [
+      "same",
+      "______",
+      "___",
+      "____",
+      "currency"
+    ],
+    "answer_rank": 7,
+    "answer_is_top1": false
+  },
+  {
+    "id": "con01",
+    "answer": "Europe",
+    "top": [
+      "located",
+      "...",
+      "in",
+      "the",
+      "__"
+    ],
+    "answer_rank": 75,
+    "answer_is_top1": false
+  },
+  {
+    "id": "con02",
+    "answer": "Africa",
+    "top": [
+      "located",
+      "...",
+      "in",
+      "a",
+      "the"
+    ],
+    "answer_rank": 31,
+    "answer_is_top1": false
+  },
+  {
+    "id": "num01",
+    "answer": "eight",
+    "top": [
+      "equal",
+      "",
+      "______",
+      "__",
+      "("
+    ],
+    "answer_rank": 48,
+    "answer_is_top1": false
+  },
+  {
+    "id": "num02",
+    "answer": "four",
+    "top": [
+      "given",
+      "at",
+      "such",
+      "a",
+      "..."
+    ],
+    "answer_rank": 369,
+    "answer_is_top1": false
+  },
+  {
+    "id": "num03",
+    "answer": "79",
+    "top": [
+      "",
+      "__",
+      "______",
+      "...",
+      "____"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "num04",
+    "answer": "eight",
+    "top": [
+      "equal",
+      "",
+      "...",
+      "a",
+      "$"
+    ],
+    "answer_rank": 33,
+    "answer_is_top1": false
+  }
+]

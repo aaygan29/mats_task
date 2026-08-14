@@ -1,0 +1,1 @@
+note: pipeline-validation outputs from Qwen3-0.6B. NOT a scientific result (a 0.6B model cannot do these multi-hop recalls). The real run (configs/main.yaml, Qwen3-4B) writes to results/ and figures/ root.

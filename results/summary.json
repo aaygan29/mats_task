@@ -1,0 +1,30 @@
+{
+  "headline": {
+    "model": "Qwen/Qwen3-4B",
+    "Lstar": 27,
+    "best_alpha": 0.5,
+    "n_items": 14,
+    "metric": "toward_Ap = P(counterfactual answer) moved (coherent trials)",
+    "C0_detection_MRR_at_Lstar": {
+      "jlens": 0.8095238095238095,
+      "logit": 0.4744897959183673
+    },
+    "C1_jlens_concept_toward_mean": 0.1065810231513211,
+    "C1_random_control_mean": 0.0001223073734386895,
+    "C1_jlens_concept_flip_rate": 0.9285714285714286,
+    "C2_jlens_vs_logit_toward": {
+      "jlens": 0.1065810231513211,
+      "logit": 0.11356980011009758
+    },
+    "C3_lowlinsim_toward": {
+      "jlens": 0.18435784473376365,
+      "logit": 0.16700199509657426
+    },
+    "C3_advantage_slope_vs_linsim": 0.05338038017181016,
+    "dominance_control_answer_swap_jlens_toward": 0.4775775574694096,
+    "token_push_control_jlens_concept_push_mean": 0.069229318307938,
+    "n_coherent_concept_trials_at_best_alpha": 42
+  },
+  "best_alpha": 0.5,
+  "linsim_median": 0.2723079323768616
+}
