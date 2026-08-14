@@ -5,18 +5,21 @@ why the project sits inside Neel Nanda's stated research interests.
 
 ## What we are actually claiming (and the decision rule)
 
-The whole project outputs one decisive number: **the slope of `(J-Lens effect - logit-lens
-effect)` against `linsim`** (`results/summary.json -> headline.C3_advantage_slope_vs_linsim`),
-plus the low-`linsim` effect means.
+NOTE (post-hoc, after the run): the project was *designed* around one decisive number — the
+slope of `(J-Lens - logit-lens)` effect vs `linsim` (C3). In practice C3 came out
+**underpowered and inconclusive** (slope -0.24, 95% CI [-0.74, +0.15] includes 0 at n=17), so
+it does NOT adjudicate anything. The claims that actually survived with uncertainty are two
+comparisons-to-baseline plus one methodological finding:
 
-| Outcome | Interpretation |
-|---|---|
-| J-Lens effect > logit-lens at low `linsim` (slope >= ~0) | J-Lens is a **genuine causal handle** on the intermediate; it adds value the unembedding cannot. Positive result. |
-| J-Lens ~ logit-lens once `linsim -> 0` (slope << 0, advantage only at high `linsim`) | J-Lens' apparent causal power in multi-hop recall is largely the **linear-unembedding shortcut** Neel suspected. Clean negative. |
-| Neither flips the answer above the random control | The setting is too weak (model can't mediate, or steering breaks it). Report and diagnose, do not overclaim. |
+| Claim | Verdict | Evidence |
+|---|---|---|
+| J-Lens is a better **detector** than logit lens (C0) | **not significant** at n=17 | MRR 0.66 vs 0.55, paired p=0.19, CIs overlap; but J-Lens > tuned lens p=0.0002 |
+| J-Lens is a better **causal lever** than logit lens (C2) | **null** (robust across layers) | 0.149 vs 0.127, paired p=0.50, diff-CI straddles 0 |
+| Steering-based "validation" of a lens is contaminated by **token-injection** | **supported, layer-dependent** | answer-swap dominates entity-swap 3.7x-23x; token_push comparable to answer effect |
+| The linsim confound (C3) | **unrefuted, not resolved** | slope CI includes 0 |
 
-All three are publishable-for-an-application, because the design makes the answer legible.
-A well-analysed negative beats a hyped positive here.
+A well-analysed null beats a hyped positive here. The token-injection finding is the novel,
+transferable part (it applies to logit lens and probes too, not just J-Lens).
 
 ## Gate ladder (each rung must pass before the next is meaningful)
 
