@@ -85,33 +85,64 @@ python -m src.run_all --config configs/main.yaml
 
 Every stage checkpoints; re-running resumes. Use `--force` to recompute.
 
-## Results (Qwen3-4B, n=14 kept items, L*=27, alpha=0.5)
+## Results (Qwen3-4B, n=17 kept items, L*=27, alpha=0.5; three lenses, held-out fitting, bootstrap CIs + paired tests)
 
-Headline: **J-Lens is a better *reader* of the hidden intermediate than logit lens, but
-not a better *causal lever*.** This is the read-vs-write split Neel's review predicts
-("J-Lens is very much about variable interpretability").
+**Headline (honest, mostly-null):** on this task and scale, the single-token J-Lens shows
+**no statistically significant advantage over the logit-lens baseline as either a reader or
+a writer**, and using a reading lens as a steering vector to "causally validate" a detected
+concept is **materially contaminated by token-injection** (the direction re-injecting its own
+token at the read-out rather than routing through the model's computation).
 
-- **C0 Detection (robust positive):** J-Lens MRR of the true hidden entity = **0.81** vs
-  logit-lens **0.47** at L*=27 (`fig1`). The advantage is concentrated at late layers; at
-  mid layers single-token logit lens is comparable or better (consistent with Neel's note
-  that the single-token J-Lens variant only mildly helps mid-stack).
-- **C1 Mediation (real, partial):** steering the J-Lens entity direction moves **0.107**
-  probability onto the counterfactual answer vs **0.0001** for a matched-norm random
-  direction; 93% of trials flip. So the read is causally live, but direct answer-steering
-  dominates entity-steering ~4.5x (**0.478** vs 0.107), i.e. the multi-hop mediation is weak.
-- **C2/C3 (null vs baseline):** J-Lens (**0.107**) is statistically tied with logit lens
-  (**0.114**), and the `(J-Lens - logit)` advantage is ~0 at every linsim (slope **+0.05**,
-  intercept ~0; `fig2`, `fig3`). J-Lens' causal power is neither a low-linsim artifact nor
-  an improvement over the cheap baseline.
-- **Qualitatively (read the raw records):** clean genuine flips exist (`cur03` China->Britain
-  moves yuan->pound, 0.76 mass, ~0 token-push), but some items are mostly token-push
-  (`cap07`, `cap09`), and effects are heterogeneous.
+Related work: logit lens (nostalgebraist 2020) reads residual directions through the
+unembedding; the tuned lens (Belrose et al. 2023) learns an affine per-layer map — the right
+learned-linear baseline. Activation patching / causal tracing (Meng et al. ROME 2022; Wang
+et al. IOI 2022) is the swap-and-measure paradigm this steering inherits, *including* the
+known confound that a patch can move the read-out token without routing through the intended
+computation. J-Lens (the global-workspace paper) adds a Jacobian-based downstream-aware read;
+we ask whether that buys causal, not just diagnostic, value.
 
-**Honest limitations of this run:** n=14 after the zero-shot filter; the animal-sound family
-(intended very-low-linsim anchor) was dropped because the 4B didn't answer those prompts in
-top-6, so the lowest linsim is ~0 (currencies), not negative. Single-token J-Lens only;
-same-position steering; small N. Earlier runs' pathologies (a suppression-gameable metric,
-over-large alpha) are documented in `results/_run1_qwen3-4B_INVALID_causal/` and the git log.
+![Detection with CI bands](figures/fig1_detection.png)
+![Causal effect vs linearity](figures/fig2_causal_vs_linsim.png)
+
+- **C0 Detection (numerically best, NOT significant vs logit):** J-Lens MRR **0.66** [95% CI
+  0.52-0.80] vs logit **0.55** [0.40-0.70] at L*=27 — the bands overlap and the paired
+  permutation test gives **p = 0.19** (`fig1`). J-Lens *does* beat the tuned lens (**0.29**,
+  p = 0.0002), but the tuned lens is trained for next-token prediction and is a poor detector
+  of a *non-next-token* intermediate, so that is a weak baseline. **Trustworthy claim: J-Lens
+  is numerically the strongest detector, but its edge over logit lens is within noise at n=17.**
+- **C2 Causal lever (robust null vs baseline):** J-Lens **0.149** vs logit **0.127** (ITT
+  0.192 vs 0.175); paired permutation **p = 0.50**, 95% CI of the difference [-0.037, +0.086]
+  straddles 0 (`fig2`). No causal advantage over the cheap baseline. (This null holds across
+  layers: at L*=31 in the prior run it was p = 0.998.)
+- **C1 Mediation + the token-injection finding (the interesting part):** J-Lens steering does
+  move mass onto the counterfactual answer (**0.149**, 95% CI [0.057, 0.264], excludes 0) vs
+  **-0.001** random. But the two-hop design exposes how much of that is genuine: direct
+  answer-steering dominates entity-steering (**0.56 vs 0.149** here; **~23x** at L*=31), and
+  the entity direction re-injects its *own* token (`token_push`) at a rate comparable to or
+  exceeding the answer effect depending on layer (0.07 at L27, **0.21 > 0.036** at L31). So a
+  large, layer-dependent share of "causal validation" is token-injection, not mediation.
+- **C3 Confound (inconclusive):** the `(J-Lens - logit)` advantage vs linsim has slope
+  **-0.24**, 95% CI [-0.74, +0.15] — includes 0 (`fig3`). Even with low-linsim `symbol` items
+  added, there is no power to resolve Neel's France/Paris confound; it is **unrefuted, not
+  resolved**.
+- **`fig4`** = the controls (concept vs answer-swap vs random); **`fig5`** shows the effect
+  lives only at the gentlest alpha (0.5, an a-priori choice) and dies as larger alphas break
+  coherence.
+
+**Why the causal null may be expected (and what it motivates):** we test the *single-token*
+J-Lens. That variant is close to a locally-linearized logit lens, so a causal tie with logit
+lens is arguably the predicted consequence of linearization — the *multi-token / future-token*
+Jacobian is the variant the workspace paper argues carries forward-looking information. So
+this is evidence about the cheap variant, and it sharpens the case for testing the multi-token
+one, rather than a verdict on J-Lens in general.
+
+**Honest limitations:** n=17 after the zero-shot filter (7 capital, 7 currency, 3 symbol; the
+animal-sound family was dropped — the 4B wouldn't answer that phrasing). Single-token J-Lens
+only. Same-position steering cannot fully separate injection from mediation — the token-push
+result is that concern *measured*, not eliminated; cross-position patching is the next step.
+The tuned lens is a next-token-trained baseline, imperfect for intermediate detection. Sanity
+gate passed (random control ~0). Earlier-run pathologies (suppression-gameable metric,
+over-large alpha) are documented in `results/_run1_*` and the git log.
 
 ## Reading the results
 

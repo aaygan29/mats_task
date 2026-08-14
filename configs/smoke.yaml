@@ -1,13 +1,11 @@
-# Pipeline-VALIDATION run. Fits in 8GB RAM. NOT a scientific result:
-# a 0.6B model largely cannot do these multi-hop recalls, so effects will be weak/noisy.
-# Purpose: prove the harness runs end-to-end and produces real figures + checkpoints.
+# Pipeline-VALIDATION run. Fits in 8GB RAM. NOT a scientific result.
 model_name: Qwen/Qwen3-0.6B
 prompts_path: null
-keep_rank: 1000000000      # keep every item (don't filter on a tiny model)
-layers: null               # auto: evenly spaced
+keep_rank: 1000000000
+layers: null
 n_layers_probe: 6
-bake_positions: last       # single-token Jacobian at the last prompt token
-bake_max_prompts: 8
-methods: [jlens, logit]
+bake_positions: last
+bake_max_prompts: 20
+methods: [jlens, logit, tuned]
 alphas: [0.5, 1.0, 2.0, 4.0]
-seed: 0
+tuned_ridge: 100.0

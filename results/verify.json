@@ -202,7 +202,7 @@
       "Spanish",
       "Euro",
       "______",
-      "__"
+      "____"
     ],
     "answer_rank": 1,
     "answer_is_top1": true
@@ -214,8 +214,8 @@
       "Egyptian",
       "__",
       "______",
-      "?",
-      "..."
+      "____",
+      "?"
     ],
     "answer_rank": 23,
     "answer_is_top1": false
@@ -238,12 +238,12 @@
     "answer": "moo",
     "top": [
       "a",
-      "described",
       "called",
+      "described",
       "the",
       "similar"
     ],
-    "answer_rank": 664,
+    "answer_rank": 654,
     "answer_is_top1": false
   },
   {
@@ -256,7 +256,7 @@
       "often",
       "known"
     ],
-    "answer_rank": 633,
+    "answer_rank": 621,
     "answer_is_top1": false
   },
   {
@@ -265,11 +265,11 @@
     "top": [
       "a",
       "called",
-      "described",
       "like",
+      "described",
       "the"
     ],
-    "answer_rank": 715,
+    "answer_rank": 686,
     "answer_is_top1": false
   },
   {
@@ -282,7 +282,7 @@
       "called",
       "most"
     ],
-    "answer_rank": 685,
+    "answer_rank": 694,
     "answer_is_top1": false
   },
   {
@@ -290,12 +290,12 @@
     "answer": "baa",
     "top": [
       "called",
-      "known",
       "a",
+      "known",
       "...",
       ":"
     ],
-    "answer_rank": 488,
+    "answer_rank": 520,
     "answer_is_top1": false
   },
   {
@@ -308,7 +308,59 @@
       "called",
       "very"
     ],
-    "answer_rank": 3187,
+    "answer_rank": 3177,
+    "answer_is_top1": false
+  },
+  {
+    "id": "sym01",
+    "answer": "Au",
+    "top": [
+      "Au",
+      "what",
+      ":",
+      "...",
+      "A"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "sym02",
+    "answer": "Cu",
+    "top": [
+      "Cu",
+      "Au",
+      "...",
+      "what",
+      ":"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "sym03",
+    "answer": "Na",
+    "top": [
+      "...",
+      "Na",
+      "?",
+      "?",
+      "what"
+    ],
+    "answer_rank": 2,
+    "answer_is_top1": false
+  },
+  {
+    "id": "sym04",
+    "answer": "Hg",
+    "top": [
+      "__",
+      "Au",
+      "what",
+      "____",
+      "which"
+    ],
+    "answer_rank": 9,
     "answer_is_top1": false
   }
 ]

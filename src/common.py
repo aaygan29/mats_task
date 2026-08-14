@@ -63,7 +63,15 @@ def label_token_ids(tok, items):
         for k in ("entity", "answer", "cf_entity", "cf_answer"):
             words.add(it[k])
     word2id = {w: first_token_id(tok, w) for w in sorted(words)}
-    # candidate vocab = unique ids (dedup collisions), keep a stable order
+    # warn loudly if two DISTINCT target words collide on their first token: detection
+    # ranking and flip scoring cannot then tell them apart.
+    byid = {}
+    for w, tid in word2id.items():
+        byid.setdefault(tid, []).append(w)
+    collisions = {tid: ws for tid, ws in byid.items() if len(ws) > 1}
+    if collisions:
+        print(f"[common] WARNING first-token collisions among target labels: "
+              f"{[ws for ws in collisions.values()]}", flush=True)
     ids = sorted(set(word2id.values()))
     id2idx = {tid: i for i, tid in enumerate(ids)}
     return word2id, ids, id2idx

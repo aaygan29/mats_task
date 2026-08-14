@@ -88,3 +88,35 @@ def logitlens_scores(resid_L, model, cand_ids):
     fn = final_norm(model)(resid_L.unsqueeze(0)).squeeze(0).float()
     U = unembedding(model)
     return fn @ U[torch.tensor(cand_ids, device=U.device)].float().T
+
+
+# ---- tuned lens (learned-linear baseline) ----
+# The critical baseline: logit lens IGNORES layers L..final; J-Lens uses the true
+# downstream Jacobian. A fair test needs a LEARNED-LINEAR map at L, fit on held-out
+# data to predict the model's own final candidate logits from h_L. If J-Lens does not
+# beat this, its detection win is just "downstream layers add information", not a
+# property of the Jacobian. W[c] doubles as a tuned-lens steering direction.
+
+@torch.no_grad()
+def fit_tuned_lens(model, corpus_encs, cand_ids, layer, ridge=100.0, skip=4):
+    """Ridge-fit W[n_cand,d], b[n_cand] : h_L -> model's true final candidate logits.
+    Fit on the HELD-OUT corpus only (never the eval items)."""
+    d = model.config.hidden_size
+    cid = torch.tensor(cand_ids, device=model.device)
+    Xs, Ys = [], []
+    for enc in corpus_encs:
+        out = model(**enc, output_hidden_states=True)
+        hs = out.hidden_states[layer][0]            # [seq, d]
+        yl = out.logits[0][:, cid].float()          # [seq, n_cand] final logits at candidates
+        Xs.append(hs[skip:].float()); Ys.append(yl[skip:])
+    X = torch.cat(Xs); Y = torch.cat(Ys)            # [N,d], [N,n_cand]
+    xm, ym = X.mean(0), Y.mean(0)
+    Xc, Yc = X - xm, Y - ym
+    A = Xc.T @ Xc + ridge * torch.eye(d, device=X.device)
+    W = torch.linalg.solve(A, Xc.T @ Yc).T          # [n_cand, d]
+    b = ym - W @ xm
+    return W.detach(), b.detach()
+
+
+def tuned_scores(resid_L, W, b):
+    return W @ resid_L.float() + b

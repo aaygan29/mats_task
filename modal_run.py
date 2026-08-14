@@ -17,17 +17,21 @@ REPO = os.path.dirname(os.path.abspath(__file__))
 
 image = (
     modal.Image.debian_slim(python_version="3.11")
-    .pip_install("torch", "transformers>=4.44", "numpy", "matplotlib",
+    # pinned to the versions validated locally (reproducibility; faster cached builds)
+    .pip_install("torch==2.8.0", "transformers==4.57.1", "numpy", "matplotlib",
                  "pyyaml", "safetensors", "huggingface_hub", "accelerate")
+    .env({"HF_HOME": "/cache/hf"})
     .add_local_dir(os.path.join(REPO, "src"), "/root/mats_task/src")
     .add_local_dir(os.path.join(REPO, "data"), "/root/mats_task/data")
     .add_local_dir(os.path.join(REPO, "configs"), "/root/mats_task/configs")
 )
 
 app = modal.App("mats-jlens")
+# persist the HF weight cache across runs so the 8GB model is downloaded ONCE
+hf_cache = modal.Volume.from_name("mats-hf-cache", create_if_missing=True)
 
 
-@app.function(image=image, gpu="A10G", timeout=3600)
+@app.function(image=image, gpu="A10G", timeout=3600, volumes={"/cache": hf_cache})
 def run_pipeline(config_rel: str) -> bytes:
     import sys
     sys.path.insert(0, "/root/mats_task")
