@@ -1,0 +1,26 @@
+{
+  "headline": {
+    "model": "Qwen/Qwen3-0.6B",
+    "Lstar": 27,
+    "best_alpha": 8.0,
+    "n_items": 14,
+    "C0_detection_MRR_at_Lstar": {
+      "jlens": 0.4287440733869305,
+      "logit": 0.3500876108018965
+    },
+    "C1_jlens_concept_effect_mean": 21.573310800961085,
+    "C1_random_control_mean": 2.9872270481927052,
+    "C2_jlens_vs_logit_concept": {
+      "jlens": 21.573310800961085,
+      "logit": 28.63627299240657
+    },
+    "C3_lowlinsim": {
+      "jlens": 9.909290343523026,
+      "logit": 15.601535588502884
+    },
+    "C3_advantage_slope_vs_linsim": -13.990783103276177,
+    "dominance_control_answer_swap_jlens": 67.43791307869385
+  },
+  "best_alpha": 8.0,
+  "linsim_median": 0.44151729345321655
+}
