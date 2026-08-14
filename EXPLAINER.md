@@ -42,15 +42,21 @@ either at *reading* the hidden step or at *pushing on it*? And is Neel's shortcu
 
 ## 3. What we found (with the honesty checks)
 
+![Detection MRR by layer with 95% CI bands](figures/fig1_detection.png)
+
 **Reading:** J-Lens scored highest (0.66) but logit lens was close behind (0.55), and once we
 put proper error bars on it, **the difference is inside the noise** (paired test p=0.19; the
-confidence bands overlap — see fig1). J-Lens clearly beat the tuned lens, but the tuned lens
+confidence bands overlap — see fig1 above). J-Lens clearly beat the tuned lens, but the tuned lens
 is trained for a different job and is a weak detector here, so that's not strong evidence. So:
 J-Lens is numerically the best reader, but we can't claim it's *significantly* better than the
 free baseline at this sample size.
 
+![Causal effect vs linearity](figures/fig2_causal_vs_linsim.png)
+
 **Writing:** J-Lens and logit lens are **tied** as steering tools (0.149 vs 0.127, p=0.50 —
-see fig2). The fancy method gives no causal advantage over the cheap one.
+see fig2 above). The fancy method gives no causal advantage over the cheap one.
+
+![Controls: concept vs answer-swap vs random](figures/fig4_controls.png)
 
 **The interesting bit — most "steering validation" is a cheap trick.** When we looked at
 whether steering actually routed through the hidden step, it mostly didn't. Directly pushing
@@ -60,8 +66,15 @@ entity mostly just made the model say the entity's own name. In 5 randomly chose
 genuine reasoning. This matters beyond J-Lens: it's a caution about how people "prove" any
 interpretability tool works by steering with it.
 
+![Confound slope, inconclusive](figures/fig3_confound.png)
+
 **Neel's shortcut confound:** we couldn't settle it — not enough low-linsim data survived the
 model's own competence filter, so the answer is "unrefuted, not resolved" (fig3, wide error bar).
+
+![Effect vs steering strength](figures/fig5_alpha_curve.png)
+
+(fig5: the steering effect only exists at the gentlest strength and dies as stronger edits
+break the model — which is why the headline uses the gentlest setting.)
 
 ## 4. The one-sentence takeaway
 

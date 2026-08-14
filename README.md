@@ -101,6 +101,9 @@ known confound that a patch can move the read-out token without routing through 
 computation. J-Lens (the global-workspace paper) adds a Jacobian-based downstream-aware read;
 we ask whether that buys causal, not just diagnostic, value.
 
+![Detection with CI bands](figures/fig1_detection.png)
+![Causal effect vs linearity](figures/fig2_causal_vs_linsim.png)
+
 - **C0 Detection (numerically best, NOT significant vs logit):** J-Lens MRR **0.66** [95% CI
   0.52-0.80] vs logit **0.55** [0.40-0.70] at L*=27 — the bands overlap and the paired
   permutation test gives **p = 0.19** (`fig1`). J-Lens *does* beat the tuned lens (**0.29**,
