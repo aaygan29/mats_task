@@ -54,6 +54,8 @@ def slope_ci(xs, ys, nboot=3000, seed=0):
         if len(np.unique(xs[idx])) < 2:
             continue
         slopes.append(np.polyfit(xs[idx], ys[idx], 1)[0])
+    if len(np.unique(xs)) < 2 or not slopes:
+        return None, [None, None]
     return float(np.polyfit(xs, ys, 1)[0]), [float(np.percentile(slopes, 2.5)),
                                              float(np.percentile(slopes, 97.5))]
 
@@ -150,13 +152,14 @@ def main(config_path, out_dir=None, force=False):
 
     # ---- figures ----
     plots.fig1_detection(det_out["summary"], layers, Lstar,
-                         os.path.join(fdir, "fig1_detection.png"), tag)
+                         os.path.join(fdir, "fig1_detection.png"), tag, det_out["per_prompt"])
     plots.fig2_causal_vs_linsim(records, os.path.join(fdir, "fig2_causal_vs_linsim.png"), tag, chosen_alpha)
     plots.fig3_confound(records, os.path.join(fdir, "fig3_confound.png"), tag, chosen_alpha)
     plots.fig4_controls(records, os.path.join(fdir, "fig4_controls.png"), tag, chosen_alpha)
     plots.fig5_alpha_curve(records, os.path.join(fdir, "fig5_alpha_curve.png"), tag)
 
-    summary = build_summary(cfg, summ, Lstar, records, items, chosen_alpha, sanity)
+    summary = build_summary(cfg, summ, Lstar, records, items, chosen_alpha, sanity,
+                            det_out["per_prompt"])
     json.dump(summary, open(os.path.join(rdir, "summary.json"), "w"), indent=2)
     print("\n=== SUMMARY ===")
     print(json.dumps(summary["headline"], indent=2))
@@ -177,12 +180,27 @@ def _paired(records, alpha, m1, m2, field="toward_Ap"):
     return xs, a, b
 
 
-def build_summary(cfg, summ, Lstar, records, items, alpha, sanity):
+def build_summary(cfg, summ, Lstar, records, items, alpha, sanity, det_recs=None):
     coh = [r for r in records if r.get("coherent")]
     def mean(m, mode, sel=lambda r: True):
         e = [r["toward_Ap"] for r in coh if r["method"] == m and r["mode"] == mode
              and r["alpha"] == alpha and sel(r)]
         return float(np.mean(e)) if e else None
+    def mean_itt(m, mode):  # intention-to-treat: ALL trials, not coherence-filtered
+        e = [r["toward_Ap"] for r in records if r["method"] == m and r["mode"] == mode
+             and r["alpha"] == alpha]
+        return float(np.mean(e)) if e else None
+
+    # ---- C0 detection uncertainty (the one positive claim needs a CI too) ----
+    c0 = {}
+    if det_recs:
+        rr = {m: [1.0 / rec[f"{m}_L{Lstar}"] for rec in det_recs] for m in experiment.METHODS}
+        c0 = {
+            "MRR": {m: float(np.mean(rr[m])) for m in experiment.METHODS},
+            "MRR_CI": {m: bootstrap_ci(rr[m]) for m in experiment.METHODS},
+            "jlens_vs_logit_paired_p": paired_perm_p(list(np.array(rr["jlens"]) - np.array(rr["logit"]))),
+            "jlens_vs_tuned_paired_p": paired_perm_p(list(np.array(rr["jlens"]) - np.array(rr["tuned"]))),
+        }
 
     xs_jl, jl, lo = _paired(records, alpha, "jlens", "logit")
     _, jl2, tu = _paired(records, alpha, "jlens", "tuned")
@@ -196,7 +214,12 @@ def build_summary(cfg, summ, Lstar, records, items, alpha, sanity):
         "metric": "toward_Ap = P(counterfactual answer) moved (coherent trials)",
         "sanity_gate": sanity,
         "C0_detection_MRR_at_Lstar": {m: summ[m][Lstar] for m in experiment.METHODS},
+        "C0_detection_stats": c0,
         "C1_jlens_concept_mean": mean("jlens", "concept"),
+        "C1_jlens_concept_mean_ITT": mean_itt("jlens", "concept"),
+        "C2_means_ITT": {"jlens": mean_itt("jlens", "concept"),
+                         "logit": mean_itt("logit", "concept"),
+                         "tuned": mean_itt("tuned", "concept")},
         "C1_jlens_concept_CI": bootstrap_ci([r["toward_Ap"] for r in coh
             if r["method"] == "jlens" and r["mode"] == "concept" and r["alpha"] == alpha]),
         "C1_random_control_mean": mean("random", "random"),

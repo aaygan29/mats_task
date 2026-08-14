@@ -15,11 +15,19 @@ def _coh(records):
     return [r for r in records if r.get("coherent", True)]
 
 
-def fig1_detection(summary_det, layers, Lstar, path, title_tag=""):
+def fig1_detection(summary_det, layers, Lstar, path, title_tag="", det_recs=None):
     fig, ax = plt.subplots(figsize=(6.4, 4.2))
+    rng = np.random.default_rng(0)
     for m in DETECT:
         ys = [summary_det[m].get(str(l), summary_det[m].get(l)) for l in layers]
         ax.plot(layers, ys, "-o", color=C[m], label=m, lw=2, ms=4)
+        if det_recs:  # bootstrap 95% CI band over items, per layer
+            lo, hi = [], []
+            for l in layers:
+                rr = np.array([1.0 / rec[f"{m}_L{l}"] for rec in det_recs])
+                bs = [rng.choice(rr, len(rr), replace=True).mean() for _ in range(1000)]
+                lo.append(np.percentile(bs, 2.5)); hi.append(np.percentile(bs, 97.5))
+            ax.fill_between(layers, lo, hi, color=C[m], alpha=0.15)
     ax.axvline(Lstar, ls="--", color="k", alpha=0.5, label=f"L* = {Lstar}")
     ax.set_xlabel("layer"); ax.set_ylabel("MRR of true hidden entity (higher=better)")
     ax.set_title(f"C0 detection: which lens finds the hidden entity?{title_tag}")
