@@ -83,6 +83,12 @@ token-injection**, so such validation should be treated with suspicion.
   single-token version, which is close to a linearized logit lens, so the causal tie is partly
   expected). Same-position steering cannot fully separate injection from mediation.
 
+**Next step:** rerun this read-vs-write comparison on the multi-token / future-token J-Lenses
+(template and oracle lens variants, from the open-source J-Lens set spanning Qwen 3.5 4B to
+DeepSeek V4 Flash), plus a cross-position activation-patching control on a few items. That
+either closes the causal null (the Jacobian's forward-looking info is real) or shows the
+token-injection caution generalizes.
+
 ## 6. The honesty story (the part Neel cares about most)
 Our first run *looked* like a big positive, until we read the raw records and realized the
 "effect" was steering *destroying* the correct answer, not redirecting it. We rebuilt the

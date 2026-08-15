@@ -258,3 +258,15 @@ plausible-but-wrong result.
 - Steering injects at the last prompt token (same-position), not cross-position patching.
 - Small item count; treat effect sizes as indicative, report uncertainty.
 - The 0.6B smoke run is **not** a scientific result and must never be presented as one.
+
+## Future work
+
+The single-token Jacobian tested here is the weakest variant of J-Lens. The natural next step
+is to rerun this exact read-vs-write comparison on the **multi-token / future-token J-Lenses**
+(the template-lens and oracle-lens variants), using the **open-source J-Lens set** that spans
+Qwen 3.5 4B through DeepSeek V4 Flash. Two clean outcomes: if the causal null closes with the
+multi-token lens, the Jacobian's forward-looking information is doing real work the single-token
+variant cannot; if the token-injection dominance persists, the caution generalizes beyond the
+cheap variant. Separately, a **cross-position activation-patching** control on a handful of
+items would directly confirm whether any steering effect routes through the intermediate at all
+(the piece same-position steering cannot isolate).
