@@ -1,5 +1,7 @@
-"""Single headline figure summarizing the whole project (n=46, Qwen3-4B).
-3 panels: (A) reading the hidden step, (B) steering the answer, (C) is the steering real?
+"""Three separate, readable headline figures (Qwen3-4B).
+  figA_reading.png    - detection MRR, three lenses, with CIs + paired-test brackets
+  figB_steering.png   - causal effect, three lenses + random, with CIs + paired test
+  figC_mechanism.png  - entity-swap vs answer-swap vs token-push vs random
 Reads results/summary.json + results/steering.json. Run: python -m src.plot_headline"""
 import json
 import numpy as np
@@ -13,7 +15,7 @@ C = {"jlens": "#1f77b4", "logit": "#d62728", "tuned": "#2ca02c", "random": "#7f7
 def boot_ci(vals, n=3000, seed=0):
     vals = np.asarray(vals, float)
     if len(vals) < 2:
-        return (np.mean(vals) if len(vals) else 0.0, 0.0, 0.0)
+        return (float(np.mean(vals)) if len(vals) else 0.0, 0.0, 0.0)
     rng = np.random.default_rng(seed)
     bs = [rng.choice(vals, len(vals), replace=True).mean() for _ in range(n)]
     m = float(np.mean(vals))
@@ -24,7 +26,7 @@ def sig(p):
     if p is None:
         return "n/a"
     if p < 0.001:
-        return f"p<0.001 ***"
+        return "p<0.001 ***"
     if p < 0.01:
         return f"p={p:.3f} **"
     if p < 0.05:
@@ -35,71 +37,85 @@ def sig(p):
 
 
 def bracket(ax, x1, x2, y, text):
-    ax.plot([x1, x1, x2, x2], [y, y * 1.03, y * 1.03, y], lw=1.1, c="k")
-    ax.text((x1 + x2) / 2, y * 1.05, text, ha="center", va="bottom", fontsize=8.5)
+    ax.plot([x1, x1, x2, x2], [y, y * 1.03, y * 1.03, y], lw=1.2, c="k")
+    ax.text((x1 + x2) / 2, y * 1.045, text, ha="center", va="bottom", fontsize=11)
 
 
-def main():
+def load():
     h = json.load(open("results/summary.json"))["headline"]
     recs = json.load(open("results/steering.json"))
     a = h["chosen_alpha"]
     coh = [r for r in recs if r.get("coherent") and r["alpha"] == a]
+    return h, coh
 
-    def eff(method, mode):
-        return [r["toward_Ap"] for r in coh if r["method"] == method and r["mode"] == mode]
 
-    fig, (axA, axB, axC) = plt.subplots(1, 3, figsize=(15, 5.2))
-    n = h["n_items_kept"]
-    fig.suptitle(f"Is J-Lens a better interpretability signal than the cheap baseline?  "
-                 f"Qwen3-4B, n={n} multi-hop items, L*={h['Lstar']}", fontsize=13, y=0.99)
+def eff(coh, method, mode):
+    return [r["toward_Ap"] for r in coh if r["method"] == method and r["mode"] == mode]
 
-    # ---- Panel A: reading (detection MRR) ----
-    s = h["C0_detection_stats"]
+
+def fig_reading(h):
+    s = h["C0_detection_stats"]; n = h["n_items_kept"]
     ms = ["jlens", "logit", "tuned"]
     vals = [s["MRR"][m] for m in ms]
     err = [[s["MRR"][m] - s["MRR_CI"][m][0] for m in ms],
            [s["MRR_CI"][m][1] - s["MRR"][m] for m in ms]]
-    axA.bar(ms, vals, yerr=err, color=[C[m] for m in ms], capsize=5, alpha=0.9)
+    fig, ax = plt.subplots(figsize=(6.6, 5.4))
+    ax.bar(["J-Lens", "logit lens", "tuned lens"], vals, yerr=err,
+           color=[C[m] for m in ms], capsize=6, alpha=0.9, width=0.6)
     top = max(s["MRR_CI"][m][1] for m in ms)
-    bracket(axA, 0, 1, top * 1.06, sig(s["jlens_vs_logit_paired_p"]))
-    bracket(axA, 0, 2, top * 1.20, sig(s["jlens_vs_tuned_paired_p"]))
-    axA.set_ylim(0, top * 1.42)
-    axA.set_ylabel("MRR of the hidden entity  (higher = reads it better)")
-    axA.set_title("A. READING the hidden step\nJ-Lens trends above logit lens, clearly beats tuned")
-    axA.grid(alpha=0.25, axis="y")
+    bracket(ax, 0, 1, top * 1.07, sig(s["jlens_vs_logit_paired_p"]))
+    bracket(ax, 0, 2, top * 1.22, sig(s["jlens_vs_tuned_paired_p"]))
+    ax.set_ylim(0, top * 1.45)
+    ax.set_ylabel("MRR of the hidden entity   (higher = reads it better)", fontsize=11)
+    ax.set_title(f"Reading the hidden step (detection)\nQwen3-4B, n={n}, at best layer L*={h['Lstar']}",
+                 fontsize=12.5)
+    ax.grid(alpha=0.25, axis="y")
+    fig.tight_layout(); fig.savefig("figures/figA_reading.png", dpi=150); plt.close(fig)
 
-    # ---- Panel B: writing (causal effect) ----
+
+def fig_steering(h, coh):
+    n = h["n_items_kept"]
     order = ["jlens", "logit", "tuned", "random"]
     modes = {"jlens": "concept", "logit": "concept", "tuned": "concept", "random": "random"}
-    bvals, blo, bhi = [], [], []
+    v, lo, hi = [], [], []
     for m in order:
-        mm, lo, hi = boot_ci(eff(m, modes[m]))
-        bvals.append(mm); blo.append(lo); bhi.append(hi)
-    axB.bar(order, bvals, yerr=[blo, bhi], color=[C[m] for m in order], capsize=5, alpha=0.9)
-    axB.axhline(0, c="k", lw=0.8)
-    topB = max(v + e for v, e in zip(bvals, bhi))
-    bracket(axB, 0, 1, topB * 1.10, sig(h["C2_jlens_minus_logit_paired_p"]))
-    axB.set_ylim(min(0, min(bvals) - 0.02), topB * 1.35)
-    axB.set_ylabel("P(counterfactual answer) moved  (higher = steers it better)")
-    axB.set_title("B. STEERING the answer\nJ-Lens = logit lens (well-powered null); random ~ 0")
-    axB.grid(alpha=0.25, axis="y")
+        mm, l, hh = boot_ci(eff(coh, m, modes[m])); v.append(mm); lo.append(l); hi.append(hh)
+    fig, ax = plt.subplots(figsize=(6.6, 5.4))
+    ax.bar(["J-Lens", "logit lens", "tuned lens", "random"], v, yerr=[lo, hi],
+           color=[C[m] for m in order], capsize=6, alpha=0.9, width=0.6)
+    ax.axhline(0, c="k", lw=0.8)
+    top = max(a + b for a, b in zip(v, hi))
+    bracket(ax, 0, 1, top * 1.10, sig(h["C2_jlens_minus_logit_paired_p"]))
+    ax.set_ylim(min(0, min(v) - 0.02), top * 1.4)
+    ax.set_ylabel("P(counterfactual answer) moved   (higher = steers it better)", fontsize=11)
+    ax.set_title(f"Steering the answer (causal)\nQwen3-4B, n={n}, alpha={h['chosen_alpha']}",
+                 fontsize=12.5)
+    ax.grid(alpha=0.25, axis="y")
+    fig.tight_layout(); fig.savefig("figures/figB_steering.png", dpi=150); plt.close(fig)
 
-    # ---- Panel C: is the steering real? ----
-    cats = ["entity-swap\n(the real test)", "answer-swap\n(direct, cheat)",
+
+def fig_mechanism(h, coh):
+    n = h["n_items_kept"]
+    cats = ["entity-swap\n(the real\nmulti-hop test)", "answer-swap\n(steer answer\ndirectly)",
             "entity-token\npush", "random"]
-    cv = [boot_ci(eff("jlens", "concept")), boot_ci(eff("jlens", "answer")),
-          (h["token_push_jlens_concept"], 0, 0), boot_ci(eff("random", "random"))]
-    axC.bar(cats, [c[0] for c in cv], yerr=[[c[1] for c in cv], [c[2] for c in cv]],
-            color=["#1f77b4", "#ff7f0e", "#9467bd", "#7f7f7f"], capsize=5, alpha=0.9)
-    axC.axhline(0, c="k", lw=0.8)
-    axC.set_ylabel("effect size (prob mass)")
-    axC.set_title("C. Is the steering REAL multi-hop?\nanswer-swap dominates ~4x; token-push ~ the effect")
-    axC.grid(alpha=0.25, axis="y")
-    axC.tick_params(axis="x", labelsize=8.5)
+    data = [boot_ci(eff(coh, "jlens", "concept")), boot_ci(eff(coh, "jlens", "answer")),
+            (h["token_push_jlens_concept"], 0, 0), boot_ci(eff(coh, "random", "random"))]
+    fig, ax = plt.subplots(figsize=(7.2, 5.4))
+    ax.bar(cats, [d[0] for d in data], yerr=[[d[1] for d in data], [d[2] for d in data]],
+           color=["#1f77b4", "#ff7f0e", "#9467bd", "#7f7f7f"], capsize=6, alpha=0.9, width=0.62)
+    ax.axhline(0, c="k", lw=0.8)
+    ax.set_ylabel("effect size (probability mass)", fontsize=11)
+    ax.set_title(f"Is the J-Lens steering REAL multi-hop routing?\n"
+                 f"answer-swap dominates the real test; token-push is a big share (n={n})",
+                 fontsize=12)
+    ax.grid(alpha=0.25, axis="y"); ax.tick_params(axis="x", labelsize=9.5)
+    fig.tight_layout(); fig.savefig("figures/figC_mechanism.png", dpi=150); plt.close(fig)
 
-    fig.tight_layout(rect=[0, 0, 1, 0.96])
-    fig.savefig("figures/fig0_headline.png", dpi=150)
-    print("wrote figures/fig0_headline.png")
+
+def main():
+    h, coh = load()
+    fig_reading(h); fig_steering(h, coh); fig_mechanism(h, coh)
+    print("wrote figures/figA_reading.png, figB_steering.png, figC_mechanism.png")
 
 
 if __name__ == "__main__":

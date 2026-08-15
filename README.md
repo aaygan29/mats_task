@@ -107,8 +107,23 @@ known confound that a patch can move the read-out token without routing through 
 computation. J-Lens (the global-workspace paper) adds a Jacobian-based downstream-aware read;
 we ask whether that buys causal, not just diagnostic, value.
 
-![Detection with CI bands](figures/fig1_detection.png)
-![Causal effect vs linearity](figures/fig2_causal_vs_linsim.png)
+### The result in three figures
+
+**Reading the hidden step:** J-Lens trends above the logit lens and clearly beats the tuned lens.
+
+![Reading the hidden step](figures/figA_reading.png)
+
+**Steering the answer:** J-Lens is no better than the logit lens (well-powered null); random ~ 0.
+
+![Steering the answer](figures/figB_steering.png)
+
+**Is the steering real multi-hop?** Direct answer-swap dominates the real entity-swap test, and token-push is a large share, so most "causal validation" is token-injection, not mediation.
+
+![Is the steering real multi-hop](figures/figC_mechanism.png)
+
+Supporting figures: `figures/fig1_detection.png` (per-layer detection with CI bands),
+`fig2_causal_vs_linsim.png` (effect vs linearity, the C3 confound), `fig4_controls.png`,
+`fig5_alpha_curve.png`.
 
 - **C0 Detection (numerically best, NOT significant vs logit):** J-Lens MRR **0.66** [95% CI
   0.52-0.80] vs logit **0.55** [0.40-0.70] at L*=27 — the bands overlap and the paired
