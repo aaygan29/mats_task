@@ -29,7 +29,7 @@ is from the entity.
   matched-norm random-direction control.
 - **C2 Beats baselines** — J-Lens flips the answer more than logit-lens and a diff-of-means
   probe, at matched norm.
-- **C3 Not an artifact (decisive)** — the J-Lens advantage **survives as `linsim -> 0`**,
+- **C3 Not an artifact** — the J-Lens advantage **survives as `linsim -> 0`**,
   where `linsim = cos(U[answer], U[entity])`. If the advantage only exists at high `linsim`,
   J-Lens adds nothing over the unembedding. This is the exact confound Neel raised.
 
@@ -127,30 +127,25 @@ Supporting figures: `figures/fig1_detection.png` (per-layer detection with CI ba
 `fig2_causal_vs_linsim.png` (effect vs linearity, the C3 confound), `fig4_controls.png`,
 `fig5_alpha_curve.png`.
 
-- **C0 Detection (numerically best, NOT significant vs logit):** J-Lens MRR **0.66** [95% CI
-  0.52-0.80] vs logit **0.55** [0.40-0.70] at L*=27 — the bands overlap and the paired
-  permutation test gives **p = 0.19** (`fig1`). J-Lens *does* beat the tuned lens (**0.29**,
-  p = 0.0002), but the tuned lens is trained for next-token prediction and is a poor detector
-  of a *non-next-token* intermediate, so that is a weak baseline. **Trustworthy claim: J-Lens
-  is numerically the strongest detector, but its edge over logit lens is within noise at n=17.**
-- **C2 Causal lever (robust null vs baseline):** J-Lens **0.149** vs logit **0.127** (ITT
-  0.192 vs 0.175); paired permutation **p = 0.50**, 95% CI of the difference [-0.037, +0.086]
-  straddles 0 (`fig2`). No causal advantage over the cheap baseline. (This null holds across
-  layers: at L*=31 in the prior run it was p = 0.998.)
+- **C0 Detection (J-Lens is the better reader):** J-Lens MRR **0.500** [95% CI 0.42-0.58] vs
+  logit **0.420** [0.35-0.50] at L*=27, paired permutation **p = 0.051** (`figA`, `fig1`). The
+  gap separated cleanly as n grew (p=0.19 at n=17, 0.07 at n=46, 0.051 at n=88). J-Lens
+  **decisively beats the tuned lens** (0.146, p<0.001). Trustworthy claim: J-Lens reads the
+  hidden intermediate better than logit lens, right at the significance threshold at n=88.
+- **C2 Causal lever (well-powered null vs baseline):** J-Lens **0.130** vs logit **0.124**;
+  paired permutation **p = 0.55**, 95% CI of the difference [-0.013, +0.027] straddles 0
+  (`figB`). No causal advantage over the cheap baseline. (Null held across layers and every n.)
 - **C1 Mediation + the token-injection finding (the interesting part):** J-Lens steering does
-  move mass onto the counterfactual answer (**0.149**, 95% CI [0.057, 0.264], excludes 0) vs
-  **-0.001** random. But the two-hop design exposes how much of that is genuine: direct
-  answer-steering dominates entity-steering (**0.56 vs 0.149** here; **~23x** at L*=31), and
-  the entity direction re-injects its *own* token (`token_push`) at a rate comparable to or
-  exceeding the answer effect depending on layer (0.07 at L27, **0.21 > 0.036** at L31). So a
-  large, layer-dependent share of "causal validation" is token-injection, not mediation.
-- **C3 Confound (inconclusive):** the `(J-Lens - logit)` advantage vs linsim has slope
-  **-0.24**, 95% CI [-0.74, +0.15] — includes 0 (`fig3`). Even with low-linsim `symbol` items
-  added, there is no power to resolve Neel's France/Paris confound; it is **unrefuted, not
-  resolved**.
-- **`fig4`** = the controls (concept vs answer-swap vs random); **`fig5`** shows the effect
-  lives only at the gentlest alpha (0.5, an a-priori choice) and dies as larger alphas break
-  coherence.
+  move mass onto the counterfactual answer (**0.130**, 95% CI [0.086, 0.178], excludes 0) vs
+  **-0.000** random. But the two-hop design exposes how much is genuine: direct answer-steering
+  dominates entity-steering **~3.6x** (0.46 vs 0.13), and the entity direction re-injects its
+  *own* token (`token_push` = **0.146**, comparable to the answer effect). So a large share of
+  "causal validation" is token-injection, not multi-hop mediation (`figC`, `fig4`).
+- **C3 Confound (answered: not the shortcut):** the `(J-Lens - logit)` advantage vs linsim is
+  flat, slope **-0.05**, 95% CI [-0.16, +0.05] (`fig3`). The reading advantage does not depend
+  on answer-entity linearity, so it is **not** the linear-unembedding shortcut Neel raised.
+- **`fig5`** shows the effect lives only at the gentlest alpha (0.5, an a-priori choice) and
+  dies as larger alphas break coherence.
 
 **Why the causal null may be expected (and what it motivates):** we test the *single-token*
 J-Lens. That variant is close to a locally-linearized logit lens, so a causal tie with logit
@@ -159,8 +154,8 @@ Jacobian is the variant the workspace paper argues carries forward-looking infor
 this is evidence about the cheap variant, and it sharpens the case for testing the multi-token
 one, rather than a verdict on J-Lens in general.
 
-**Honest limitations:** n=17 after the zero-shot filter (7 capital, 7 currency, 3 symbol; the
-animal-sound family was dropped — the 4B wouldn't answer that phrasing). Single-token J-Lens
+**Honest limitations:** n=88 after a top-8 zero-shot filter (23 capital, 26 currency, 22
+language, 3 largest-city, 14 symbol). Single-token J-Lens
 only. Same-position steering cannot fully separate injection from mediation — the token-push
 result is that concern *measured*, not eliminated; cross-position patching is the next step.
 The tuned lens is a next-token-trained baseline, imperfect for intermediate detection. Sanity
