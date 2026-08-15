@@ -172,7 +172,7 @@ over-large alpha) are documented in `results/_run1_*` and the git log.
 `results/summary.json -> headline` reports, at the chosen layer `L*` and best steering
 strength: C0 detection MRR (jlens vs logit), C1 concept effect vs random control, C2 jlens
 vs logit, C3 low-`linsim` effects and the slope of `(jlens - logit)` effect vs `linsim`
-(the decisive number), and the answer-swap dominance control.
+(flat, C3), and the answer-swap dominance control.
 
 Figures: `fig1_detection` (C0), `fig2_causal_vs_linsim` (C2/C3, the headline),
 `fig3_confound` (C3 slope), `fig4_controls` (concept vs answer-swap vs random).

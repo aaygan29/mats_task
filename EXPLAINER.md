@@ -1,98 +1,91 @@
-# The whole project in plain English
+# The whole project in plain English (Qwen3-4B, n=88)
 
 ## 1. The thing we were curious about
 
 Big language models seem to "think" in steps inside a single forward pass. For "the capital
 of the country that makes champagne is ___", the model has to first recall a hidden middle
-step — **France** — even though *France is never written in the prompt and never printed in
-the answer* (which is "Paris"). That hidden middle step is the interesting thing.
+step, **France**, even though *France is never written in the prompt and never printed in the
+answer* (which is "Paris"). That hidden middle step is the interesting thing.
 
-There's a new tool called **J-Lens** that claims to *read* these hidden middle steps out of
-the model's internals. Neel Nanda (the person we're applying to) reviewed the J-Lens paper
-and said, roughly: "it looks good for *guessing* what the model is doing, but nobody has shown
-it's good for *proving* it — and I have a specific worry that in cases like France/Paris the
-apparent success is just a mathematical shortcut, not real insight."
+A tool called **J-Lens** (from Anthropic's global-workspace paper) claims to *read* these
+hidden middle steps out of the model's internals. Neel Nanda reviewed it and said, roughly:
+"it looks good for *guessing* what the model is doing, but nobody has shown it is good for
+*proving* it, and I suspect that in cases like France/Paris the apparent success is just a
+mathematical shortcut, not real insight."
 
 **Our question:** is J-Lens actually better than the dead-simple baseline (the "logit lens"),
-either at *reading* the hidden step or at *pushing on it*? And is Neel's shortcut worry real?
+either at *reading* the hidden step or at *steering* it? And is Neel's shortcut worry real?
 
 ## 2. The setup
 
 - **Model:** Qwen3-4B (a solid open model, run on a rented GPU via Modal).
-- **Data:** 24 fill-in-the-blank prompts where the answer requires a hidden middle step
-  (country->capital, country->currency, element->chemical-symbol). We kept the 17 the model
-  answers correctly on its own.
-- **Three "lenses" (ways to point at a concept as a direction inside the model):**
-  1. **logit lens** — the cheap baseline. Ignores most of the network.
-  2. **J-Lens** — the fancy new one. Uses the model's own gradient (how much "thinking about
-     France more" would change the output).
-  3. **tuned lens** — a learned middle-ground baseline, so the comparison is fair.
-- **Two tests:**
-  - **Reading (detection):** at each layer, does the lens correctly point at the hidden
-    entity (France) out of a list of candidates? Score = how highly it ranks the right one.
-  - **Writing (steering):** if we *edit* the model's internal "France" direction toward
-    "Germany", does the final answer flip from Paris to Berlin? We measure how much
-    probability actually moves onto the counterfactual answer.
-- **The key control (Neel's worry, made measurable):** for each item we measure `linsim` =
-  how linearly related the answer already is to the entity. If a lens only "works" when
-  linsim is high, it's exploiting the shortcut, not doing real work.
-- **A second key control:** when we push "France->Germany", does the answer become "Berlin"
-  (real multi-step reasoning), or does the model just start saying "Germany" (a cheap trick
-  we call *token-injection*)? The two-hop design lets us tell these apart.
+- **Data:** 200 fill-in-the-blank prompts needing a hidden middle step (country to capital /
+  currency / language, and element to chemical symbol). We kept the **88 the model answers
+  correctly on its own** (top-8 zero-shot).
+- **Three "lenses"** (ways to point at a concept as a direction inside the model): the cheap
+  **logit lens**, the fancy **J-Lens** (uses the model's own gradient), and a learned **tuned
+  lens** (a fair middle-ground baseline).
+- **Two tests:** *reading* (does the lens rank the hidden entity France highly?) and *writing*
+  (if we edit the internal France direction toward Germany, does the answer flip Paris to
+  Berlin? measured as probability mass moved onto the counterfactual answer).
+- **Two honesty controls:** `linsim` (how linearly the answer already sits relative to the
+  entity, Neel's shortcut made measurable), and a **token-injection** check (did steering make
+  the model reason to "Berlin", or just blurt "Germany"?).
 
-## 3. What we found (with the honesty checks)
+## 3. What we found (with figures)
 
-![Detection MRR by layer with 95% CI bands](figures/fig1_detection.png)
+**Reading: J-Lens is the better reader.**
 
-**Reading:** J-Lens scored highest (0.66) but logit lens was close behind (0.55), and once we
-put proper error bars on it, **the difference is inside the noise** (paired test p=0.19; the
-confidence bands overlap — see fig1 above). J-Lens clearly beat the tuned lens, but the tuned lens
-is trained for a different job and is a weak detector here, so that's not strong evidence. So:
-J-Lens is numerically the best reader, but we can't claim it's *significantly* better than the
-free baseline at this sample size.
+![Reading the hidden step](figures/figA_reading.png)
 
-![Causal effect vs linearity](figures/fig2_causal_vs_linsim.png)
+J-Lens ranks the hidden entity best (MRR 0.500 vs logit's 0.420). The paired test gives
+**p=0.051**, right at the significance line, and it got there steadily as we added data
+(p=0.19 at n=17, 0.07 at n=46, 0.051 at n=88, so it is a real effect emerging from noise, not
+a fluke). J-Lens **decisively beats the tuned lens** (0.146, p<0.001).
 
-**Writing:** J-Lens and logit lens are **tied** as steering tools (0.149 vs 0.127, p=0.50 —
-see fig2 above). The fancy method gives no causal advantage over the cheap one.
+**Writing: J-Lens is no better than the cheap baseline.**
 
-![Controls: concept vs answer-swap vs random](figures/fig4_controls.png)
+![Steering the answer](figures/figB_steering.png)
 
-**The interesting bit — most "steering validation" is a cheap trick.** When we looked at
-whether steering actually routed through the hidden step, it mostly didn't. Directly pushing
-the *answer* worked several times harder than pushing the *entity* (fig4), and pushing the
-entity mostly just made the model say the entity's own name. In 5 randomly chosen examples,
-4 were mostly token-injection and only 1 (Italy->Greece giving Rome->Athens cleanly) was
-genuine reasoning. This matters beyond J-Lens: it's a caution about how people "prove" any
-interpretability tool works by steering with it.
+Steering with J-Lens moves 0.130 of the probability onto the counterfactual answer vs the
+logit lens's 0.124 (paired **p=0.55**, difference band straddles zero: a well-powered null). A
+random direction moves it 0.000. So the fancy method gives no causal advantage as a lever.
 
-![Confound slope, inconclusive](figures/fig3_confound.png)
+**The steering is mostly a cheap trick.**
 
-**Neel's shortcut confound:** we couldn't settle it — not enough low-linsim data survived the
-model's own competence filter, so the answer is "unrefuted, not resolved" (fig3, wide error bar).
+![Is the steering real multi-hop](figures/figC_mechanism.png)
 
-![Effect vs steering strength](figures/fig5_alpha_curve.png)
+When we check *how* steering works, it mostly does not route through the hidden step. Steering
+the *answer* directly beats steering the *entity* by **~3.6x**, and injecting the entity
+direction raises the entity's *own* token about as much as it raises the answer (0.146). So a
+large share of "causal validation" is token-injection, not multi-hop mediation. This is a
+caution that applies to any lens, not just J-Lens.
 
-(fig5: the steering effect only exists at the gentlest strength and dies as stronger edits
-break the model — which is why the headline uses the gentlest setting.)
+**Neel's shortcut confound: answered, and it is not the shortcut.**
+
+![Confound: effect vs linearity](figures/fig3_confound.png)
+
+The J-Lens minus logit-lens advantage is flat across linear-similarity (slope -0.05, band
+[-0.16, +0.05]). So the small reading advantage does *not* live only at high linsim, meaning
+it is not simply the linear-unembedding shortcut Neel worried about.
 
 ## 4. The one-sentence takeaway
 
-On this task and scale, the fancy J-Lens gives **no statistically significant advantage over
-the free logit-lens baseline** as either a reader or a writer, and "validating" a lens by
-steering with it is **substantially contaminated by token-injection** — so such validation
-should be treated with suspicion.
+On this task, J-Lens is a **genuinely better reader** of a model's hidden intermediate than
+the free logit-lens baseline (p about 0.05, decisive versus the tuned lens), but **no better a
+writer**, and "validating" a lens by steering with it is **substantially contaminated by
+token-injection**, so such validation should be treated with suspicion.
 
-## 5. What we'd trust and what we wouldn't
-- **Trust:** the causal null (J-Lens ~ logit lens as a lever) — it held across two layers and
-  has a proper test. The token-injection caution — it's directly measured.
-- **Don't over-trust:** the reading comparison (underpowered, n=17), the confound test
-  (inconclusive), and anything about the *multi-token* J-Lens (we only tested the cheap
-  single-token version, which is expected to behave a lot like logit lens).
+## 5. What we would trust and what we would not
+- **Trust:** the causal null (well-powered, held across layers), the token-injection caution
+  (directly measured), and the reading advantage (converges cleanly as n grows).
+- **Don't over-trust:** anything about the *multi-token* J-Lens (we only tested the cheap
+  single-token version, which is close to a linearized logit lens, so the causal tie is partly
+  expected). Same-position steering cannot fully separate injection from mediation.
 
 ## 6. The honesty story (the part Neel cares about most)
-Our first run *looked* like a big positive — until we read the raw numbers and realized the
-"effect" was the steering *destroying* the correct answer, not redirecting it. We rebuilt the
-metric so it can't be faked that way. Later, adding proper error bars turned a detection "win"
-we were about to report into a statistical tie. Catching our own false positives twice is the
-real result here.
+Our first run *looked* like a big positive, until we read the raw records and realized the
+"effect" was steering *destroying* the correct answer, not redirecting it. We rebuilt the
+metric so it cannot be faked that way. Later, adding proper error bars turned a detection
+"win" we were about to report into a near-tie, and only scaling from 17 to 88 items resolved
+it into a real (p about 0.05) effect. Catching our own false positives is the real result.
