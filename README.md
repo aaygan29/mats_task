@@ -4,6 +4,9 @@ A small, self-contained mechanistic-interpretability study for a MATS applicatio
 (Neel Nanda stream). It tests one crisp claim on **Qwen3-4B**, with baselines and a
 built-in confound control.
 
+*This repo is the detailed companion to the one-page executive summary: the full method,
+every number with its uncertainty, the sanity checks, and all figures live here.*
+
 ## The question
 
 J-Lens (Anthropic's global-workspace paper) reads a model's internal "working memory"
@@ -51,13 +54,13 @@ data/prompts.json      multi-hop items with a HIGH->LOW linsim spread + counterf
 src/common.py          model load, tokenization, zero-shot verification, scoring
 src/lenses.py          the 3 extractors (logit / J-Lens / diff-mean) + readers
 src/experiment.py      detection sweep (C0) + causal steering with controls (C1/C2/C3)
-src/plots.py           figures 1-4
+src/plots.py           figures 1-5 + plot_headline.py (figA/B/C)
 src/run_all.py         checkpointed orchestrator + sanity-check summary
 configs/smoke.yaml     Qwen3-0.6B, fits 8GB RAM  -> PIPELINE VALIDATION ONLY
 configs/main.yaml      Qwen3-4B                  -> the real scientific run
 modal_run.py           run main.yaml on a Modal A10G and pull artifacts back
 results/               verify/detection/steering/summary json (committed)
-figures/               fig1-4 png (committed)
+figures/               figA/B/C + fig1-5 png (committed)
 checkpoints/           baked jvecs (gitignored; regenerated)
 ```
 
@@ -84,6 +87,38 @@ python -m src.run_all --config configs/main.yaml
 ```
 
 Every stage checkpoints; re-running resumes. Use `--force` to recompute.
+
+## Methods (the nitty-gritty)
+
+**Three concept-direction methods**, all reduced to a single direction per concept `c` so
+they are compared at matched norm:
+- **logit lens** — the unembedding row `U[c]`. The cheap baseline; ignores the layers above.
+- **J-Lens (single-token variant)** — `mean_pos d logit_c / d h_L`, the Jacobian of the
+  concept logit w.r.t. the layer-`L` residual stream, averaged over positions of a **held-out
+  corpus** (`data/bake_corpus.json`, disjoint from the eval items) and reused as a fixed
+  direction. Reader = dot with `h_L`; steering vector = add to `h_L`.
+- **tuned lens** — a ridge-fit affine map `W h_L + b` predicting the model's own final
+  candidate logits, fit on the **same held-out corpus** (never the eval items). The
+  learned-linear, network-aware baseline.
+
+**Data.** 200 multi-hop items (country → capital / currency / language; element → symbol),
+each requiring a hidden intermediate entity. Country clues are reused across relations so the
+same hidden entity yields different answers and different `linsim`. Keep the **88 the model
+answers zero-shot** (correct answer in its top-8; see `results/verify.json`).
+
+**Detection metric (reading).** Per item and layer, score every candidate with each lens and
+take the **reciprocal rank of the true hidden entity** (MRR, higher = better). The analysis
+layer **L\*=27** is chosen using only the *baseline* lenses (mean of logit and tuned MRR), so
+the choice cannot be forked toward J-Lens.
+
+**Steering metric (writing).** Inject `dir(cf_entity) − dir(entity)` at the last prompt token
+and measure **`toward_Ap`** = the increase in probability of the counterfactual answer, over
+*coherent* trials only (an entropy / max-prob guard drops trials where the edit breaks the
+next-token distribution). Perturbation size **alpha = 0.5 × ‖residual‖**, the gentlest,
+chosen a priori (`fig5` shows the effect dies at larger alphas). Controls: matched-norm
+**random** direction; **answer-swap** (steer the answer token directly); **token-push**
+(`push_Ip`, how much the injected entity's *own* token rises). Every effect carries a
+bootstrap 95% CI and a paired permutation test.
 
 ## Results (Qwen3-4B, n=88 kept items / 78 paired, L*=27, alpha=0.5; three lenses, held-out fitting, bootstrap CIs + paired tests)
 
@@ -194,14 +229,27 @@ vs logit, C3 low-`linsim` effects and the slope of `(jlens - logit)` effect vs `
 Figures: `fig1_detection` (C0), `fig2_causal_vs_linsim` (C2/C3, the headline),
 `fig3_confound` (C3 slope), `fig4_controls` (concept vs answer-swap vs random).
 
-## Sanity checks you should do before trusting any of this
+## Sanity checks I ran, and what I nearly got wrong
 
-This is built so the numbers are checkable, not taken on faith:
-- Read `results/verify.json` — confirm the model actually answers the kept items zero-shot.
-- Read a handful of raw steering records in `results/steering.json` and confirm a "flip"
-  is a real move toward the counterfactual answer, not the model just emitting the swapped
-  entity token (`delta_Ip` should not dominate `delta_Ap`).
-- Re-run with a different `seed` and confirm the random control stays near zero.
+This is the part I spent the most care on, because an agent will happily produce a
+plausible-but-wrong result.
+
+- **I caught a fake positive by reading the raw records.** My first run looked like a clear
+  win. Reading `steering.json` by hand, the "flips" were the perturbation *suppressing* the
+  correct answer, not redirecting it: my initial log-gap metric was rewarding destruction. I
+  rebuilt the metric in probability space (`toward_Ap`) with a coherence guard so suppression
+  cannot score.
+- **I almost reported a detection win that was noise.** At n=17 the J-Lens vs logit gap looked
+  clean, until I put bootstrap CIs on it and the paired test gave p=0.19. It only firmed up to
+  p≈0.05 after I scaled the item set to 88 (p=0.19 → 0.07 → 0.051).
+- **Cheap controls, checked every run.** A matched-norm random direction moves the answer by
+  ~0.000 (a live gate in `run_all.py` fails the run otherwise); direct answer-steering is
+  reported alongside entity-steering so the reader can see the ~3.6x dominance; `push_Ip` is
+  reported so token-injection is visible per item.
+- **What you can re-check:** `results/verify.json` (the model answers the kept items
+  zero-shot), the raw `results/steering.json` records (a flip is a real move to the answer,
+  not just the swapped-entity token), and re-running with a different seed (the random control
+  stays near zero).
 
 ## Limitations
 
