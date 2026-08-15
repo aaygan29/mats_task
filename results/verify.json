@@ -1,6 +1,6 @@
 [
   {
-    "id": "cap01",
+    "id": "cap00",
     "answer": "Paris",
     "top": [
       "located",
@@ -13,59 +13,124 @@
     "answer_is_top1": false
   },
   {
+    "id": "cap01",
+    "answer": "Berlin",
+    "top": [
+      "in",
+      "located",
+      "__",
+      "which",
+      "?"
+    ],
+    "answer_rank": 34,
+    "answer_is_top1": false
+  },
+  {
     "id": "cap02",
     "answer": "Tokyo",
     "top": [
       "Tokyo",
-      "__",
       "located",
       "...",
-      "a"
+      "__",
+      "which"
     ],
     "answer_rank": 1,
     "answer_is_top1": true
   },
   {
     "id": "cap03",
+    "answer": "Moscow",
+    "top": [
+      "located",
+      "__",
+      "in",
+      ":",
+      "______"
+    ],
+    "answer_rank": 19,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap04",
     "answer": "Rome",
     "top": [
       "Rome",
       "__",
       "...",
       "______",
-      "?"
+      "which"
     ],
     "answer_rank": 1,
     "answer_is_top1": true
   },
   {
-    "id": "cap04",
-    "answer": "Madrid",
-    "top": [
-      "located",
-      "Se",
-      "...",
-      "?",
-      "?"
-    ],
-    "answer_rank": 47,
-    "answer_is_top1": false
-  },
-  {
     "id": "cap05",
-    "answer": "Cairo",
+    "answer": "Athens",
     "top": [
       "__",
-      ":",
-      "",
-      "?",
-      "..."
+      "______",
+      "Athens",
+      "____",
+      "-"
     ],
-    "answer_rank": 8,
+    "answer_rank": 3,
     "answer_is_top1": false
   },
   {
     "id": "cap06",
+    "answer": "Madrid",
+    "top": [
+      "located",
+      "...",
+      "Se",
+      "?",
+      "?"
+    ],
+    "answer_rank": 36,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap07",
+    "answer": "Beijing",
+    "top": [
+      "Beijing",
+      "__",
+      "which",
+      "______",
+      "located"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cap08",
+    "answer": "Cairo",
+    "top": [
+      "...",
+      "which",
+      "__",
+      "?",
+      "?"
+    ],
+    "answer_rank": 13,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap09",
+    "answer": "Lisbon",
+    "top": [
+      "located",
+      "______",
+      "__",
+      "Lis",
+      ":"
+    ],
+    "answer_rank": 29,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap10",
     "answer": "Vienna",
     "top": [
       "in",
@@ -78,7 +143,20 @@
     "answer_is_top1": false
   },
   {
-    "id": "cap07",
+    "id": "cap11",
+    "answer": "Warsaw",
+    "top": [
+      "located",
+      "in",
+      "Warsaw",
+      "the",
+      "..."
+    ],
+    "answer_rank": 3,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap12",
     "answer": "Amsterdam",
     "top": [
       "located",
@@ -91,228 +169,1008 @@
     "answer_is_top1": false
   },
   {
-    "id": "cap08",
+    "id": "cap13",
+    "answer": "Oslo",
+    "top": [
+      "located",
+      "__",
+      "in",
+      "...",
+      "which"
+    ],
+    "answer_rank": 13,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap14",
     "answer": "Ottawa",
     "top": [
       "located",
       "in",
+      "also",
       "__",
-      "which",
       "a"
     ],
-    "answer_rank": 29,
+    "answer_rank": 69,
     "answer_is_top1": false
   },
   {
-    "id": "cap09",
+    "id": "cap15",
     "answer": "Seoul",
     "top": [
-      "Seoul",
-      "located",
+      "called",
+      "?",
       "which",
+      "?",
+      "?"
+    ],
+    "answer_rank": 12,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap16",
+    "answer": "Stockholm",
+    "top": [
+      "...",
+      "?",
+      "?",
+      "which",
+      "?"
+    ],
+    "answer_rank": 8,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap17",
+    "answer": "Brasilia",
+    "top": [
+      "located",
+      "______",
+      "__",
+      "...",
+      "which"
+    ],
+    "answer_rank": 42,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap18",
+    "answer": "Delhi",
+    "top": [
+      "?",
+      "...",
+      "?",
+      "which",
+      "A"
+    ],
+    "answer_rank": 16,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap19",
+    "answer": "Mexico",
+    "top": [
+      "located",
+      "...",
+      "?",
       "in",
+      "?"
+    ],
+    "answer_rank": 11,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap20",
+    "answer": "Ankara",
+    "top": [
+      "located",
+      "the",
+      "a",
+      "known",
+      "in"
+    ],
+    "answer_rank": 703,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap21",
+    "answer": "Bangkok",
+    "top": [
+      "located",
+      "Bangkok",
+      "in",
+      "?",
+      "..."
+    ],
+    "answer_rank": 2,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap22",
+    "answer": "Buenos",
+    "top": [
+      "located",
+      "__",
+      "...",
+      "?",
+      "in"
+    ],
+    "answer_rank": 6,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap23",
+    "answer": "Bern",
+    "top": [
+      "in",
+      "located",
+      "...",
+      "?",
       "__"
     ],
-    "answer_rank": 1,
+    "answer_rank": 43,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap24",
+    "answer": "Dublin",
+    "top": [
+      "located",
+      "Dublin",
+      "?",
+      "?",
+      "which"
+    ],
+    "answer_rank": 2,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap25",
+    "answer": "Helsinki",
+    "top": [
+      "located",
+      "in",
+      "?",
+      "...",
+      "__"
+    ],
+    "answer_rank": 22,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap26",
+    "answer": "Copenhagen",
+    "top": [
+      "which",
+      "located",
+      "...",
+      "?",
+      "?"
+    ],
+    "answer_rank": 8,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap27",
+    "answer": "Budapest",
+    "top": [
+      "...",
+      "______",
+      "located",
+      "__",
+      "?"
+    ],
+    "answer_rank": 33,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cap28",
+    "answer": "Hanoi",
+    "top": [
+      "H",
+      "?",
+      "...",
+      "located",
+      "which"
+    ],
+    "answer_rank": 2,
     "answer_is_top1": true
   },
   {
-    "id": "cap10",
-    "answer": "London",
+    "id": "cap29",
+    "answer": "Nairobi",
     "top": [
+      "in",
       "located",
-      "__",
-      "______",
-      "London",
-      "in"
+      "...",
+      "?",
+      "__"
     ],
-    "answer_rank": 3,
+    "answer_rank": 10,
     "answer_is_top1": false
+  },
+  {
+    "id": "cur00",
+    "answer": "euro",
+    "top": [
+      "euro",
+      "?",
+      "______",
+      "__",
+      "Euro"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
   },
   {
     "id": "cur01",
     "answer": "euro",
     "top": [
       "euro",
-      "______",
-      "__",
       "?",
-      "French"
+      "Euro",
+      "______",
+      "?"
     ],
     "answer_rank": 1,
     "answer_is_top1": true
   },
   {
     "id": "cur02",
-    "answer": "ruble",
+    "answer": "yen",
     "top": [
-      "rub",
-      "Russian",
-      "Rub",
-      "r",
-      "______"
+      "yen",
+      "Japanese",
+      "?",
+      "______",
+      "__"
     ],
     "answer_rank": 1,
     "answer_is_top1": true
   },
   {
     "id": "cur03",
-    "answer": "yuan",
+    "answer": "ruble",
     "top": [
-      "yuan",
-      "Ren",
-      "Chinese",
-      "ren",
-      "Yuan"
+      "__",
+      "______",
+      "?",
+      "...",
+      "?"
+    ],
+    "answer_rank": 110,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur04",
+    "answer": "euro",
+    "top": [
+      "euro",
+      "Euro",
+      "______",
+      "?",
+      "__"
     ],
     "answer_rank": 1,
     "answer_is_top1": true
   },
   {
-    "id": "cur04",
-    "answer": "peso",
-    "top": [
-      "Mexican",
-      "peso",
-      "______",
-      "US",
-      "?"
-    ],
-    "answer_rank": 2,
-    "answer_is_top1": false
-  },
-  {
     "id": "cur05",
-    "answer": "dollar",
-    "top": [
-      "US",
-      "United",
-      "U",
-      "dollar",
-      "American"
-    ],
-    "answer_rank": 4,
-    "answer_is_top1": false
-  },
-  {
-    "id": "cur06",
     "answer": "euro",
     "top": [
       "euro",
-      "Spanish",
       "Euro",
       "______",
+      "__",
       "____"
     ],
     "answer_rank": 1,
     "answer_is_top1": true
   },
   {
+    "id": "cur06",
+    "answer": "euro",
+    "top": [
+      "euro",
+      "Euro",
+      "Spanish",
+      "?",
+      "______"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
     "id": "cur07",
+    "answer": "yuan",
+    "top": [
+      "yuan",
+      "Ren",
+      "Chinese",
+      "Yuan",
+      "ren"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cur08",
     "answer": "pound",
     "top": [
       "Egyptian",
       "__",
       "______",
-      "____",
-      "?"
+      "...",
+      "____"
     ],
-    "answer_rank": 23,
+    "answer_rank": 7,
     "answer_is_top1": false
   },
   {
-    "id": "cur08",
-    "answer": "real",
+    "id": "cur09",
+    "answer": "euro",
     "top": [
-      "Brazilian",
+      "euro",
       "______",
-      "US",
-      "real",
-      "Real"
+      "?",
+      "__",
+      "____"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cur10",
+    "answer": "euro",
+    "top": [
+      "euro",
+      "______",
+      "__",
+      "Euro",
+      "?"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cur11",
+    "answer": "zloty",
+    "top": [
+      "z\u0142",
+      "z",
+      "Polish",
+      "?",
+      "______"
+    ],
+    "answer_rank": 2,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur12",
+    "answer": "euro",
+    "top": [
+      "euro",
+      "______",
+      "Euro",
+      "__",
+      "?"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cur13",
+    "answer": "krone",
+    "top": [
+      "______",
+      "?",
+      "__",
+      "____",
+      "?"
+    ],
+    "answer_rank": 21,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur14",
+    "answer": "dollar",
+    "top": [
+      "Canadian",
+      "?",
+      "____",
+      "______",
+      "?"
+    ],
+    "answer_rank": 19,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur15",
+    "answer": "won",
+    "top": [
+      "won",
+      "?",
+      "?",
+      "?",
+      ":"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cur16",
+    "answer": "krona",
+    "top": [
+      "Swedish",
+      "______",
+      "?",
+      "kron",
+      "____"
     ],
     "answer_rank": 4,
     "answer_is_top1": false
   },
   {
-    "id": "snd01",
-    "answer": "moo",
+    "id": "cur17",
+    "answer": "real",
     "top": [
-      "a",
-      "called",
-      "described",
-      "the",
-      "similar"
+      "Brazilian",
+      "______",
+      "____",
+      "?",
+      "__"
     ],
-    "answer_rank": 654,
+    "answer_rank": 8,
     "answer_is_top1": false
   },
   {
-    "id": "snd02",
-    "answer": "meow",
+    "id": "cur18",
+    "answer": "rupee",
     "top": [
-      "a",
-      "called",
-      "usually",
-      "often",
-      "known"
+      "ru",
+      "Indian",
+      "Ru",
+      "__",
+      "?"
     ],
-    "answer_rank": 621,
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "cur19",
+    "answer": "peso",
+    "top": [
+      "______",
+      "?",
+      "?",
+      "Mexican",
+      "?"
+    ],
+    "answer_rank": 8,
     "answer_is_top1": false
   },
   {
-    "id": "snd03",
-    "answer": "quack",
+    "id": "cur20",
+    "answer": "lira",
     "top": [
-      "a",
-      "called",
-      "like",
-      "described",
-      "the"
+      "Turkish",
+      "?",
+      "?",
+      "__",
+      "____"
     ],
-    "answer_rank": 686,
+    "answer_rank": 33,
     "answer_is_top1": false
   },
   {
-    "id": "snd04",
-    "answer": "woof",
+    "id": "cur21",
+    "answer": "baht",
     "top": [
-      "a",
-      "the",
-      "an",
-      "called",
-      "most"
+      "Thai",
+      "?",
+      "____",
+      "ba",
+      "Ba"
     ],
-    "answer_rank": 694,
+    "answer_rank": 3,
     "answer_is_top1": false
   },
   {
-    "id": "snd05",
-    "answer": "baa",
+    "id": "cur22",
+    "answer": "peso",
     "top": [
-      "called",
-      "a",
-      "known",
+      "Argentine",
+      "______",
+      "peso",
+      "__",
+      "?"
+    ],
+    "answer_rank": 3,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur23",
+    "answer": "franc",
+    "top": [
+      "Swiss",
+      "?",
+      "______",
+      "euro",
+      "\u745e\u58eb"
+    ],
+    "answer_rank": 11,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur24",
+    "answer": "euro",
+    "top": [
+      "pound",
+      "British",
+      "?",
+      "______",
+      "?"
+    ],
+    "answer_rank": 7,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur25",
+    "answer": "euro",
+    "top": [
+      "?",
+      "?",
+      "______",
+      "Swedish",
+      "?"
+    ],
+    "answer_rank": 51,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur26",
+    "answer": "krone",
+    "top": [
+      "Danish",
+      "______",
+      "Norwegian",
+      "?",
+      "kr"
+    ],
+    "answer_rank": 5,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur27",
+    "answer": "forint",
+    "top": [
+      "______",
+      "?",
+      "__",
+      "?",
+      "___"
+    ],
+    "answer_rank": 180,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur28",
+    "answer": "dong",
+    "top": [
+      "Vietnamese",
+      "?",
+      "______",
+      "__",
+      "Vietnam"
+    ],
+    "answer_rank": 78,
+    "answer_is_top1": false
+  },
+  {
+    "id": "cur29",
+    "answer": "shilling",
+    "top": [
+      "Ken",
+      "______",
+      "__",
+      "...",
+      "____"
+    ],
+    "answer_rank": 24,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan00",
+    "answer": "French",
+    "top": [
+      "French",
+      "...",
+      "__",
+      "______",
+      "?"
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "lan01",
+    "answer": "German",
+    "top": [
+      "...",
+      "__",
+      "?",
+      ":",
+      ":"
+    ],
+    "answer_rank": 10,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan02",
+    "answer": "Japanese",
+    "top": [
+      "...",
+      "Japanese",
+      "?",
+      "__",
+      "?"
+    ],
+    "answer_rank": 2,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan03",
+    "answer": "Russian",
+    "top": [
+      "__",
+      ":",
+      ":",
+      "?",
+      "..."
+    ],
+    "answer_rank": 28,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan04",
+    "answer": "Italian",
+    "top": [
+      "...",
+      "__",
+      "?",
+      ":",
+      "Italian"
+    ],
+    "answer_rank": 5,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan05",
+    "answer": "Greek",
+    "top": [
+      "__",
+      ":",
+      "______",
+      "____",
+      "Greek"
+    ],
+    "answer_rank": 5,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan06",
+    "answer": "Spanish",
+    "top": [
+      "...",
+      "?",
+      "Spanish",
+      "?",
+      ":"
+    ],
+    "answer_rank": 3,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan07",
+    "answer": "Mandarin",
+    "top": [
+      "__",
+      "Chinese",
+      "...",
+      "______",
+      "?"
+    ],
+    "answer_rank": 13,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan08",
+    "answer": "Arabic",
+    "top": [
+      "...",
+      "__",
+      "?",
+      ":",
+      ":"
+    ],
+    "answer_rank": 6,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan09",
+    "answer": "Portuguese",
+    "top": [
+      "__",
+      "______",
+      "____",
+      ":",
+      "?"
+    ],
+    "answer_rank": 14,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan10",
+    "answer": "German",
+    "top": [
+      "__",
+      "...",
+      "______",
+      ":",
+      ":"
+    ],
+    "answer_rank": 44,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan11",
+    "answer": "Polish",
+    "top": [
+      "...",
+      "?",
+      "?",
       "...",
       ":"
     ],
-    "answer_rank": 520,
+    "answer_rank": 13,
     "answer_is_top1": false
   },
   {
-    "id": "snd06",
-    "answer": "neigh",
+    "id": "lan12",
+    "answer": "Dutch",
     "top": [
-      "a",
-      "like",
-      "the",
-      "called",
-      "very"
+      "__",
+      "...",
+      "______",
+      "?",
+      ":"
     ],
-    "answer_rank": 3177,
+    "answer_rank": 15,
     "answer_is_top1": false
   },
   {
-    "id": "sym01",
+    "id": "lan13",
+    "answer": "Norwegian",
+    "top": [
+      "__",
+      "______",
+      ":",
+      "?",
+      "..."
+    ],
+    "answer_rank": 24,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan14",
+    "answer": "English",
+    "top": [
+      "__",
+      "______",
+      "____",
+      ":",
+      "?"
+    ],
+    "answer_rank": 11,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan15",
+    "answer": "Korean",
+    "top": [
+      "Korean",
+      "?",
+      "?",
+      "?",
+      "..."
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
+    "id": "lan16",
+    "answer": "Swedish",
+    "top": [
+      "...",
+      "Swedish",
+      "?",
+      "__",
+      "?"
+    ],
+    "answer_rank": 3,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan17",
+    "answer": "Portuguese",
+    "top": [
+      "__",
+      "______",
+      "...",
+      "Portuguese",
+      ":"
+    ],
+    "answer_rank": 4,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan18",
+    "answer": "Hindi",
+    "top": [
+      ":",
+      "__",
+      "...",
+      "?",
+      ":"
+    ],
+    "answer_rank": 14,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan19",
+    "answer": "Spanish",
+    "top": [
+      "...",
+      "Spanish",
+      "__",
+      "?",
+      "?"
+    ],
+    "answer_rank": 2,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan20",
+    "answer": "Turkish",
+    "top": [
+      "__",
+      "____",
+      "Turkish",
+      "______",
+      ":"
+    ],
+    "answer_rank": 3,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan21",
+    "answer": "Thai",
+    "top": [
+      "...",
+      "?",
+      "__",
+      "?",
+      "?"
+    ],
+    "answer_rank": 14,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan22",
+    "answer": "Spanish",
+    "top": [
+      "...",
+      "______",
+      "__",
+      "Spanish",
+      ":"
+    ],
+    "answer_rank": 5,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan23",
+    "answer": "German",
+    "top": [
+      "__",
+      "?",
+      ":",
+      "______",
+      "..."
+    ],
+    "answer_rank": 32,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan24",
+    "answer": "English",
+    "top": [
+      "...",
+      "__",
+      "?",
+      ":",
+      ":"
+    ],
+    "answer_rank": 12,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan25",
+    "answer": "Finnish",
+    "top": [
+      "__",
+      "?",
+      "______",
+      ":",
+      "..."
+    ],
+    "answer_rank": 84,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan26",
+    "answer": "Danish",
+    "top": [
+      "...",
+      "?",
+      "__",
+      "?",
+      "?"
+    ],
+    "answer_rank": 13,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan27",
+    "answer": "Hungarian",
+    "top": [
+      "__",
+      "...",
+      "______",
+      ":",
+      ":"
+    ],
+    "answer_rank": 36,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan28",
+    "answer": "Vietnamese",
+    "top": [
+      "...",
+      "__",
+      "______",
+      "Vietnamese",
+      "..."
+    ],
+    "answer_rank": 4,
+    "answer_is_top1": false
+  },
+  {
+    "id": "lan29",
+    "answer": "Swahili",
+    "top": [
+      "__",
+      "...",
+      "______",
+      "?",
+      ":"
+    ],
+    "answer_rank": 20,
+    "answer_is_top1": false
+  },
+  {
+    "id": "sym00",
     "answer": "Au",
     "top": [
       "Au",
@@ -325,42 +1183,133 @@
     "answer_is_top1": true
   },
   {
+    "id": "sym01",
+    "answer": "Hg",
+    "top": [
+      "H",
+      "Ag",
+      "Au",
+      "what",
+      "..."
+    ],
+    "answer_rank": 1,
+    "answer_is_top1": true
+  },
+  {
     "id": "sym02",
+    "answer": "Na",
+    "top": [
+      "...",
+      ":",
+      "__",
+      ":",
+      "A"
+    ],
+    "answer_rank": 20,
+    "answer_is_top1": false
+  },
+  {
+    "id": "sym03",
+    "answer": "Fe",
+    "top": [
+      "...",
+      "Fe",
+      "__",
+      ":",
+      "?"
+    ],
+    "answer_rank": 3,
+    "answer_is_top1": false
+  },
+  {
+    "id": "sym04",
     "answer": "Cu",
     "top": [
       "Cu",
       "Au",
-      "...",
-      "what",
+      "Ag",
+      "Sn",
       ":"
     ],
     "answer_rank": 1,
     "answer_is_top1": true
   },
   {
-    "id": "sym03",
-    "answer": "Na",
+    "id": "sym05",
+    "answer": "Ag",
     "top": [
       "...",
-      "Na",
       "?",
       "?",
-      "what"
+      ":",
+      "A"
     ],
-    "answer_rank": 2,
+    "answer_rank": 9,
     "answer_is_top1": false
   },
   {
-    "id": "sym04",
-    "answer": "Hg",
+    "id": "sym06",
+    "answer": "K",
     "top": [
       "__",
-      "Au",
-      "what",
+      "C",
       "____",
-      "which"
+      "______",
+      ""
     ],
-    "answer_rank": 9,
+    "answer_rank": 16,
+    "answer_is_top1": false
+  },
+  {
+    "id": "sym07",
+    "answer": "W",
+    "top": [
+      "-",
+      "__",
+      "",
+      "?",
+      ":"
+    ],
+    "answer_rank": 25,
+    "answer_is_top1": false
+  },
+  {
+    "id": "sym08",
+    "answer": "Pb",
+    "top": [
+      "what",
+      "...",
+      "which",
+      "Z",
+      "__"
+    ],
+    "answer_rank": 13,
+    "answer_is_top1": false
+  },
+  {
+    "id": "sym09",
+    "answer": "Sn",
+    "top": [
+      "Z",
+      "Fe",
+      "__",
+      "____",
+      "?"
+    ],
+    "answer_rank": 34,
+    "answer_is_top1": false
+  },
+  {
+    "id": "sym10",
+    "answer": "Sb",
+    "top": [
+      "B",
+      "...",
+      "what",
+      "Sn",
+      "Si"
+    ],
+    "answer_rank": 7,
     "answer_is_top1": false
   }
 ]
