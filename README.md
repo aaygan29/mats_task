@@ -85,13 +85,21 @@ python -m src.run_all --config configs/main.yaml
 
 Every stage checkpoints; re-running resumes. Use `--force` to recompute.
 
-## Results (Qwen3-4B, n=17 kept items, L*=27, alpha=0.5; three lenses, held-out fitting, bootstrap CIs + paired tests)
+## Results (Qwen3-4B, n=88 kept items / 78 paired, L*=27, alpha=0.5; three lenses, held-out fitting, bootstrap CIs + paired tests)
 
-**Headline (honest, mostly-null):** on this task and scale, the single-token J-Lens shows
-**no statistically significant advantage over the logit-lens baseline as either a reader or
-a writer**, and using a reading lens as a steering vector to "causally validate" a detected
-concept is **materially contaminated by token-injection** (the direction re-injecting its own
-token at the read-out rather than routing through the model's computation).
+The three figures below tell the whole story.
+
+**Headline (honest, well-powered):** on this task, the single-token J-Lens is a **better
+reader** of the hidden intermediate than the logit-lens baseline (detection MRR 0.500 vs
+0.420, paired **p=0.051**, i.e. right at the significance threshold and clearly separating as
+n grows: p=0.19 at n=17, 0.07 at n=46, 0.051 at n=88) and **decisively beats the tuned lens**
+(0.146, p<0.001). But it is **no better as a writer** (causal steering 0.130 vs 0.124, paired
+**p=0.55**, difference CI [-0.013, +0.027] straddles zero: a well-powered null). Using a
+reading lens as a steering vector to "causally validate" a concept is **materially
+contaminated by token-injection** (direct answer-steering dominates entity-steering ~3.6x, and
+the entity direction re-injects its own token at a rate comparable to the answer effect). The
+reading advantage does **not** depend on answer-entity linearity (C3 slope -0.05, CI [-0.16,
++0.05]), so it is not simply the linear-unembedding shortcut Neel worried about.
 
 Related work: logit lens (nostalgebraist 2020) reads residual directions through the
 unembedding; the tuned lens (Belrose et al. 2023) learns an affine per-layer map — the right
@@ -101,8 +109,23 @@ known confound that a patch can move the read-out token without routing through 
 computation. J-Lens (the global-workspace paper) adds a Jacobian-based downstream-aware read;
 we ask whether that buys causal, not just diagnostic, value.
 
-![Detection with CI bands](figures/fig1_detection.png)
-![Causal effect vs linearity](figures/fig2_causal_vs_linsim.png)
+### The result in three figures
+
+**Reading the hidden step:** J-Lens trends above the logit lens and clearly beats the tuned lens.
+
+![Reading the hidden step](figures/figA_reading.png)
+
+**Steering the answer:** J-Lens is no better than the logit lens (well-powered null); random ~ 0.
+
+![Steering the answer](figures/figB_steering.png)
+
+**Is the steering real multi-hop?** Direct answer-swap dominates the real entity-swap test, and token-push is a large share, so most "causal validation" is token-injection, not mediation.
+
+![Is the steering real multi-hop](figures/figC_mechanism.png)
+
+Supporting figures: `figures/fig1_detection.png` (per-layer detection with CI bands),
+`fig2_causal_vs_linsim.png` (effect vs linearity, the C3 confound), `fig4_controls.png`,
+`fig5_alpha_curve.png`.
 
 - **C0 Detection (numerically best, NOT significant vs logit):** J-Lens MRR **0.66** [95% CI
   0.52-0.80] vs logit **0.55** [0.40-0.70] at L*=27 — the bands overlap and the paired
