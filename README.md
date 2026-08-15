@@ -123,9 +123,11 @@ we ask whether that buys causal, not just diagnostic, value.
 
 ![Is the steering real multi-hop](figures/figC_mechanism.png)
 
-Supporting figures: `figures/fig1_detection.png` (per-layer detection with CI bands),
-`fig2_causal_vs_linsim.png` (effect vs linearity, the C3 confound), `fig4_controls.png`,
-`fig5_alpha_curve.png`.
+**Neel's confound, answered:** the (J-Lens - logit) advantage is flat across linearity.
+
+![Confound: advantage vs linsim](figures/fig3_confound.png)
+
+(The full set of supporting figures is embedded in the [Supporting figures](#supporting-figures-appendix) appendix below.)
 
 - **C0 Detection (J-Lens is the better reader):** J-Lens MRR **0.500** [95% CI 0.42-0.58] vs
   logit **0.420** [0.35-0.50] at L*=27, paired permutation **p = 0.051** (`figA`, `fig1`). The
@@ -161,6 +163,26 @@ result is that concern *measured*, not eliminated; cross-position patching is th
 The tuned lens is a next-token-trained baseline, imperfect for intermediate detection. Sanity
 gate passed (random control ~0). Earlier-run pathologies (suppression-gameable metric,
 over-large alpha) are documented in `results/_run1_*` and the git log.
+
+## Supporting figures (appendix)
+
+**Per-layer detection (backs figure A):** J-Lens (blue) sits above logit lens (red) across
+mid-late layers, both peak near L*, and the tuned lens (green) is well below. Shaded = 95% CI.
+
+![Per-layer detection with CI bands](figures/fig1_detection.png)
+
+**Per-item causal effect vs linearity (raw scatter behind figure C / the confound):**
+
+![Causal effect vs linsim, all three lenses](figures/fig2_causal_vs_linsim.png)
+
+**Controls (alternate view of figure C):** entity-swap vs answer-swap vs random.
+
+![Controls bar](figures/fig4_controls.png)
+
+**Effect vs steering strength (why the headline uses alpha=0.5):** the effect lives at the
+gentlest perturbation and dies as larger alphas break the model's coherence.
+
+![Effect vs alpha](figures/fig5_alpha_curve.png)
 
 ## Reading the results
 
