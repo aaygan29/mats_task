@@ -1,7 +1,7 @@
 # REAL scientific run. Needs a GPU with >=16GB (Modal A10G via modal_run.py).
 model_name: Qwen/Qwen3-4B
 prompts_path: null
-keep_rank: 6               # keep items answered within top-6 zero-shot
+keep_rank: 8               # keep items answered within top-8 zero-shot
 layers: null               # auto: evenly spaced across depth
 n_layers_probe: 10
 bake_positions: last       # single-token Jacobian at last token of each held-out sentence
