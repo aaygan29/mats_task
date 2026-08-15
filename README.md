@@ -85,19 +85,21 @@ python -m src.run_all --config configs/main.yaml
 
 Every stage checkpoints; re-running resumes. Use `--force` to recompute.
 
-## Results (Qwen3-4B, n=46 kept items, L*=27, alpha=0.5; three lenses, held-out fitting, bootstrap CIs + paired tests)
+## Results (Qwen3-4B, n=88 kept items / 78 paired, L*=27, alpha=0.5; three lenses, held-out fitting, bootstrap CIs + paired tests)
 
-See `figures/fig0_headline.png` for the whole result in one figure.
+The three figures below tell the whole story.
 
-**Headline (honest, well-powered):** on this task, the single-token J-Lens is at best a
-**marginally better reader** than the logit-lens baseline (detection MRR 0.556 vs 0.456,
-paired p=0.07, a trend) and is **no better as a writer** (causal steering 0.124 vs 0.107,
-paired p=0.24, difference CI straddles zero: a well-powered null). Using a reading lens as a
-steering vector to "causally validate" a concept is **materially contaminated by
-token-injection** (direct answer-steering dominates entity-steering ~4x). J-Lens does clearly
-beat the tuned lens at reading (p<0.001), and its small reading advantage does **not** depend
-on answer-entity linearity (C3 slope -0.06, CI [-0.20, +0.07]), so it is not simply the
-linear-unembedding shortcut Neel worried about.
+**Headline (honest, well-powered):** on this task, the single-token J-Lens is a **better
+reader** of the hidden intermediate than the logit-lens baseline (detection MRR 0.500 vs
+0.420, paired **p=0.051**, i.e. right at the significance threshold and clearly separating as
+n grows: p=0.19 at n=17, 0.07 at n=46, 0.051 at n=88) and **decisively beats the tuned lens**
+(0.146, p<0.001). But it is **no better as a writer** (causal steering 0.130 vs 0.124, paired
+**p=0.55**, difference CI [-0.013, +0.027] straddles zero: a well-powered null). Using a
+reading lens as a steering vector to "causally validate" a concept is **materially
+contaminated by token-injection** (direct answer-steering dominates entity-steering ~3.6x, and
+the entity direction re-injects its own token at a rate comparable to the answer effect). The
+reading advantage does **not** depend on answer-entity linearity (C3 slope -0.05, CI [-0.16,
++0.05]), so it is not simply the linear-unembedding shortcut Neel worried about.
 
 Related work: logit lens (nostalgebraist 2020) reads residual directions through the
 unembedding; the tuned lens (Belrose et al. 2023) learns an affine per-layer map — the right
